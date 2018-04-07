@@ -1,23 +1,7 @@
 #include "fullSolver.hpp"
 
-void fullSolver(){
-	// using vector of vectors in heap to define full matrix
-	vector< vector<double>*>* matrix = new vector< vector<double>*>;
-	vector<double>* row = new vector<double>;
-	(*row) = { 4 , 4 , 2 , 3 };
-	(*matrix).push_back(row);
-	row = new vector<double>;
-	(*row) = { 2 , 3 , 3 , 1 };
-	(*matrix).push_back(row);
-	row = new vector<double>;
-	(*row) = { 4 , 5 , 3 , 2 };
-	(*matrix).push_back(row);
-	row = new vector<double>;
-	(*row) = { 1 , 3 , 2 , 4 };
-	(*matrix).push_back(row);
-
-	vector<double> b = { -1 , 1 , 4 , -3 };
-
+void fullSolver( vector<double>* solution , vector< vector<double>*>* matrix , vector<double>* b ){
+	
 	// get some information about the matrix
 	int rank = (*matrix).size();
 	
@@ -57,23 +41,17 @@ void fullSolver(){
 		// Ux = (L^-1)*b where L = (M1^-1)(M2^-1)(M3^-1)...
 		// so (L^-1) = ...(M3)(M2)(M1) -> in reverse order (we're already calculated this for the U matrix)
 		// so Ux = y = M*b
-	vector<double> y;
-	vectorProduct( &y , M , &b );
+	vector<double>* y = new vector<double>;
+	vectorProduct( y , M , b );
 	
 	// define upper triangular matrix
 	vector<vector<double>*>* U = new vector< vector<double>*>;
 	matrixProduct( U , M , matrix );
-	//cout << "upper triangular matrix:" << endl;
-	//printMatrix(U);
-	//cout << endl;
 
 	// backward substitution -> x = U\y
-	vector<double> x;
-	backwardSubstitution( &x , U , &y );
-	//printMatrix( &x );
+	backwardSubstitution( solution , U , y );
 
-	cout << endl;
-//    return 0;
+	return;
 }
 
 void conditionMatrix( vector<vector<double>*>* matrix ){
