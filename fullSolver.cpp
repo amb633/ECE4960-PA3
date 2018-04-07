@@ -24,13 +24,16 @@ int main(int argc, char const *argv[])
 	// using vector of vectors in heap to define full matrix
 	vector< vector<double>*>* matrix = new vector< vector<double>*>;
 	vector<double>* row = new vector<double>;
-	(*row) = { 4 , 4 , 2 };
+	(*row) = { 4 , 4 , 2 , 3 };
 	(*matrix).push_back(row);
 	row = new vector<double>;
-	(*row) = { 2 , 3 , 3 };
+	(*row) = { 2 , 3 , 3 , 1 };
 	(*matrix).push_back(row);
 	row = new vector<double>;
-	(*row) = { 4 , 5 , 3 };
+	(*row) = { 4 , 5 , 3 , 2 };
+	(*matrix).push_back(row);
+	row = new vector<double>;
+	(*row) = { 1 , 3 , 2 , 4 };
 	(*matrix).push_back(row);
 
 	// get some information about the matrix
@@ -72,7 +75,7 @@ int main(int argc, char const *argv[])
 	for ( int i = M_matrices.size() - 1 ; i >= 0 ; i-- ){
 		matrixProduct( M , M , M_matrices[i] );
 	}
-	vector<double> b = {2 , 3 , 5 };
+	vector<double> b = { -1 , 1 , 4 , -3 };
 	vector<double> y2;
 	vectorProduct( &y2 , M , &b );
 	
