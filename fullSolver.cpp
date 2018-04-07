@@ -12,7 +12,10 @@ int zeroMatrix( vector<vector<double>*>* m , int rank );
 int calcAtomicVector( vector<vector<double>*>* m , vector<vector<double>*>* matrix, int row );
 int copyMatrix( vector<vector<double>*>* copy , vector<vector<double>*>* original );
 int matrixProduct( vector<vector<double>*>* result , vector<vector<double>*>* matrix_1 , vector<vector<double>*>* matrix_2 );
+int vectorProduct( vector<double>* y , vector<vector<double>*>* matrix , vector<double>* x );
+// remove if not required
 int invertAtomicMatrix( vector<vector<double>*>* inverse , vector<vector<double>*>* matrix , int col );
+// remove if not required
 int forwardSubstitution( vector<double>* y , vector<vector<double>*>* L , vector<double>* b );
 int backwardSubstitution( vector<double>* x , vector<vector<double>*>* U , vector<double>* y );
 
@@ -62,16 +65,25 @@ int main(int argc, char const *argv[])
 	printMatrix(M_matrices[1]);
 	cout << endl;*/
 
+	// multiply all the m matrices in reverse order
+	vector<vector<double>*>* M = new vector< vector<double>*>;
+	identityMatrix( M , rank );
+	
+	for ( int i = M_matrices.size() - 1 ; i >= 0 ; i-- ){
+		matrixProduct( M , M , M_matrices[i] );
+	}
+	vector<double> b = {2 , 3 , 5 };
+	vector<double> y2;
+	vectorProduct( &y2 , M , &b );
+	
 	// define upper triangular matrix
 	vector<vector<double>*>* U = new vector< vector<double>*>;
-	copyMatrix( U , matrix );
-	for ( int i = 0 ; i < M_matrices.size() ; i++ ){
-		matrixProduct( U , M_matrices[i] , U );	
-	}
+	matrixProduct( U , M , matrix );
+	cout << "upper triangular matrix:" << endl;
 	printMatrix(U);
 	cout << endl;
 	// define lower triangular matrix
-	vector<vector<double>*>* L = new vector< vector<double>*>;
+	/*vector<vector<double>*>* L = new vector< vector<double>*>;
 	identityMatrix( L , rank );
 	for ( int i = 0 ; i < M_matrices.size() ; i++ ){
 		invertAtomicMatrix( M_matrices[i] , M_matrices[i] , i );
@@ -86,16 +98,15 @@ int main(int argc, char const *argv[])
 	printMatrix(check);
 	cout << endl;
 	// forward substitution -> find Ux = L\b
-	vector<double> y;
-	vector<double> b = {2 , 3 , 5 };
+	
 	forwardSubstitution( &y , L , &b );
 	for ( int i = 0 ; i < rank ; i++ ){
 		cout << y[i] << "   ";
 	}
-	cout << endl;
+	cout << endl;*/
 	// backward substitution -> x = U\y
 	vector<double> x;
-	backwardSubstitution( &x , U , &y );
+	backwardSubstitution( &x , U , &y2 );
 	for ( int i = 0 ; i < rank ; i++ ){
 		cout << x[i] << "   ";
 	}
@@ -188,6 +199,7 @@ int copyMatrix( vector<vector<double>*>* copy , vector<vector<double>*>* origina
 }
 
 int matrixProduct( vector<vector<double>*>* result , vector<vector<double>*>* matrix_1 , vector<vector<double>*>* matrix_2 ){
+	// calculates result = matrix_1*matrix*2
 	int rank = (*matrix_1).size();
 	
 	vector<vector<double>*>* temp = new vector<vector<double>*>;
@@ -201,6 +213,20 @@ int matrixProduct( vector<vector<double>*>* result , vector<vector<double>*>* ma
 		}
 	}
 	(*result) = (*temp);
+	return 0;
+}
+
+int vectorProduct( vector<double>* y , vector<vector<double>*>* matrix , vector<double>* x ){
+	// calculates y = matrix*x
+	int rank = (*x).size();
+	for ( int i = 0 ; i < rank ; i++ ){
+		(*y).push_back(0.0);
+	}
+	for ( int i = 0 ; i < rank ; i++ ){
+		for ( int j = 0 ; j < rank ; j++ ){
+			(*y)[i] += ((*(*matrix)[i])[j])*( (*x)[j] );
+		}
+	}
 	return 0;
 }
 
