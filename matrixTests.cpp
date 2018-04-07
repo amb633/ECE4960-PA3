@@ -5,7 +5,7 @@
 
 using namespace std;
 
-int main(int argc, char const *argv[])
+void matrixTests(int argc, char const *argv[])
 {
 	vector< vector<double> > matrix;
 	vector<double> row1 = {1 , 0 , 0};
@@ -54,5 +54,5 @@ int main(int argc, char const *argv[])
 		cout << endl;
 	}
 	cout << endl;
-	return 0;
+//    return 0;
 }

@@ -1,23 +1,6 @@
-#include <iostream>
-#include <cstdlib>
-#include <cmath>
-#include <vector>
+#include "fullSolver.hpp"
 
-using namespace std;
-
-int conditionMatrix( vector<vector<double>*>* matrix );
-int printMatrix ( vector<vector<double>*>* matrix );
-int printMatrix( vector<double>* vector );
-int identityMatrix( vector<vector<double>*>* m , int rank );
-int zeroMatrix( vector<vector<double>*>* m , int rank );
-int calcAtomicVector( vector<vector<double>*>* m , vector<vector<double>*>* matrix, int row );
-int copyMatrix( vector<vector<double>*>* copy , vector<vector<double>*>* original );
-int matrixProduct( vector<vector<double>*>* result , vector<vector<double>*>* matrix_1 , vector<vector<double>*>* matrix_2 );
-int vectorProduct( vector<double>* y , vector<vector<double>*>* matrix , vector<double>* x );
-int backwardSubstitution( vector<double>* x , vector<vector<double>*>* U , vector<double>* y );
-
-int main(int argc, char const *argv[])
-{
+void fullSolver(){
 	// using vector of vectors in heap to define full matrix
 	vector< vector<double>*>* matrix = new vector< vector<double>*>;
 	vector<double>* row = new vector<double>;
@@ -90,10 +73,10 @@ int main(int argc, char const *argv[])
 	printMatrix( &x );
 
 	cout << endl;
-	return 0;
+//    return 0;
 }
 
-int conditionMatrix( vector<vector<double>*>* matrix ){
+void conditionMatrix( vector<vector<double>*>* matrix ){
 // function to condition matrix through partial row pivoting
 	// assume square matrix
 	int rank = (*matrix).size();
@@ -117,10 +100,10 @@ int conditionMatrix( vector<vector<double>*>* matrix ){
 		(*(*matrix)[col]) = (*(*matrix)[max_row]);
 		(*(*matrix)[max_row]) = temp;
 	}
-	return 0;
+//    return 0;
 }
 
-int printMatrix ( vector<vector<double>*>* matrix ){
+void printMatrix ( vector<vector<double>*>* matrix ){
 	// overloaded function to print matrix
 	int rank = (*matrix).size();
 	for ( int i = 0 ; i < rank ; i++ ){
@@ -129,20 +112,20 @@ int printMatrix ( vector<vector<double>*>* matrix ){
 		}
 		cout << endl;
 	}
-	return 0;
+//    return 0;
 }
 
-int printMatrix( vector<double>* vector ){
+void printMatrix( vector<double>* vector ){
 	// overloaded function to print vector
 	int rank = (*vector).size();
 	for ( int i = 0 ; i < rank ; i++ ){
 		cout << (*vector)[i] << "   ";
 	}
 	cout << endl;
-	return 0;
+//    return 0;
 }
 
-int identityMatrix( vector<vector<double>*>* m , int rank ){
+void identityMatrix( vector<vector<double>*>* m , int rank ){
 	// function to create a identity matrix of size rank
 	vector<double>* row;
 	for ( int c = 0 ; c < rank ; c++ ){
@@ -153,10 +136,10 @@ int identityMatrix( vector<vector<double>*>* m , int rank ){
 		}
 		(*m).push_back(row);
 	}
-	return 0;
+//    return 0;
 }
 
-int zeroMatrix( vector<vector<double>*>* matrix , int rank ){
+void zeroMatrix( vector<vector<double>*>* matrix , int rank ){
 	// function to create a zero matrix of size rank
 	vector<double>*row;
 	for( int c = 0 ; c < rank ; c++ ){
@@ -166,10 +149,10 @@ int zeroMatrix( vector<vector<double>*>* matrix , int rank ){
 		}
 		(*matrix).push_back(row);
 	}
-	return 0;
+//    return 0;
 }
 
-int calcAtomicVector( vector<vector<double>*>* m , vector<vector<double>*>* matrix, int row ){
+void calcAtomicVector( vector<vector<double>*>* m , vector<vector<double>*>* matrix, int row ){
 	// calculates the off diagonal elements for gaussian elimination where the current pivot is matrix[row][row]
 	// the coefficients are stored in m
 	int rank = (*matrix).size();
@@ -177,10 +160,10 @@ int calcAtomicVector( vector<vector<double>*>* m , vector<vector<double>*>* matr
 	for ( int i = (row + 1) ; i < rank ; i++ ){
 		(*(*m)[i])[row] = -(*(*matrix)[i])[row]/pivot;
 	}
-	return 0;
+//    return 0;
 }
 
-int copyMatrix( vector<vector<double>*>* copy , vector<vector<double>*>* original ){
+void copyMatrix( vector<vector<double>*>* copy , vector<vector<double>*>* original ){
 	// creates a deep copy of a matrix
 	int rank = (*original).size();
 	zeroMatrix( copy , rank );
@@ -189,10 +172,10 @@ int copyMatrix( vector<vector<double>*>* copy , vector<vector<double>*>* origina
 			(*(*copy)[i])[j] = (*(*original)[i])[j];
 		}
 	}
-	return 0;
+//    return 0;
 }
 
-int matrixProduct( vector<vector<double>*>* result , vector<vector<double>*>* matrix_1 , vector<vector<double>*>* matrix_2 ){
+void matrixProduct( vector<vector<double>*>* result , vector<vector<double>*>* matrix_1 , vector<vector<double>*>* matrix_2 ){
 	// calculates result = matrix_1*matrix*2
 	int rank = (*matrix_1).size();
 	
@@ -207,10 +190,10 @@ int matrixProduct( vector<vector<double>*>* result , vector<vector<double>*>* ma
 		}
 	}
 	(*result) = (*temp);
-	return 0;
+//    return 0;
 }
 
-int vectorProduct( vector<double>* y , vector<vector<double>*>* matrix , vector<double>* x ){
+void vectorProduct( vector<double>* y , vector<vector<double>*>* matrix , vector<double>* x ){
 	// calculates y = matrix*x
 	int rank = (*x).size();
 	for ( int i = 0 ; i < rank ; i++ ){
@@ -221,10 +204,10 @@ int vectorProduct( vector<double>* y , vector<vector<double>*>* matrix , vector<
 			(*y)[i] += ((*(*matrix)[i])[j])*( (*x)[j] );
 		}
 	}
-	return 0;
+//    return 0;
 }
 
-int backwardSubstitution( vector<double>* x , vector<vector<double>*>* U , vector<double>* y ){
+void backwardSubstitution( vector<double>* x , vector<vector<double>*>* U , vector<double>* y ){
 	// backward sub to find x in Ux = y where U is upper triangular and y = (L^-1)b
 	int rank = (*y).size();
 	for ( int i = 0 ; i < rank ; i++ ){
@@ -244,5 +227,5 @@ int backwardSubstitution( vector<double>* x , vector<vector<double>*>* U , vecto
 		(*x)[i] = temp;
 	}
 
-	return 0;
+//    return 0;
 }
