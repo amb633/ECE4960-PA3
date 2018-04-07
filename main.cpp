@@ -43,34 +43,19 @@ void LinearLSF(vector<double>* x, vector<double>* y, vector<vector<double>*>* H,
 
 int main(int argc, const char * argv[]) {
     // insert code here...
-    fullSolver();
+    // fullSolver();
 
     vector<double>* VGS = new vector<double>;
     vector<double>* VDS = new vector<double>;
     vector<double>* IDS = new vector<double>;   
     
-    string path = "/Users/arianabruno/Desktop/ECE4960/ProgrammingAssignments/ECE4960-PA3/outputNMOS.txt";
-   // string path = "C:/Users/Haritha/Documents/ECE4960-PAs/ECE4960-PA3/outputNMOS.txt";
+    //string path = "/Users/arianabruno/Desktop/ECE4960/ProgrammingAssignments/ECE4960-PA3/outputNMOS.txt";
+    string path = "C:/Users/Haritha/Documents/ECE4960-PAs/ECE4960-PA3/outputNMOS.txt";
     readDataFile( path , VGS ,  VDS ,  IDS );
 
     vector<double>* s_measured = new vector<double>;
     search_values( s_measured , VGS , VDS , IDS , 1.0 , 1.95 );
-    printMatrix( s_measured);
-    
-//    string line;
-//    string path = "/Users/arianabruno/Desktop/ECE4960/ProgrammingAssignments/ECE4960-PA3/outputNMOS.txt";
-////    string path = "outputNMOS.txt";
-//    ifstream myfile (path);
-//    if (myfile.is_open())
-//    {
-//        while ( getline(myfile,line) )
-//        {
-//            cout << line << '\n';
-//        }
-//        myfile.close();
-//    }
-//
-//    else cout << "Unable to open file" << endl;;
+    //printMatrix( s_measured);
     
     double c_0 = 10.0;
     double m = -0.5;
@@ -105,7 +90,58 @@ int main(int argc, const char * argv[]) {
     vector<vector<double>*>* H_matrix = new vector<vector<double>*>;
     vector<double>* RHS = new vector<double>;
     LinearLSF(x_samples, y_noisey_samples, H_matrix, RHS);
+    vector<double>* solution;
+
+    // get some information about the system 
+    // assume square matrix
+    int rank = (*H_matrix).size();
+
+    // condition the matrix through partial row pivoting
+    conditionMatrix( H_matrix );
+
+    // create a dummy copy of matrix
+    vector< vector<double>*>* dummy = new vector< vector<double>*>;
+    copyMatrix( dummy , H_matrix );
+
+    // number of M matrices required = rank - 1;
+    vector<vector< vector<double>*>*> M_matrices;
+    for ( int i = 0 ; i < (rank - 1) ; i++ ){
+        
+        // first create an identity matrix
+        vector< vector<double>*>* m = new vector< vector<double>*>;
+        identityMatrix( m , rank );
+
+        // second figure out the off-diagonal elements 
+        calcAtomicVector( m , dummy , i );
+        M_matrices.push_back(m); 
+
+        // update dummy matrix for next iteration
+        matrixProduct( dummy , m , dummy );
+
+    }
+
+    // multiply all the m matrices in reverse order
+    vector<vector<double>*>* M = new vector< vector<double>*>;
+    identityMatrix( M , rank );
     
-    
+    for ( int i = M_matrices.size() - 1 ; i >= 0 ; i-- ){
+        matrixProduct( M , M , M_matrices[i] );
+    }
+
+    // no need to explicity calculate lower triangular matrix
+        // Ux = (L^-1)*b where L = (M1^-1)(M2^-1)(M3^-1)...
+        // so (L^-1) = ...(M3)(M2)(M1) -> in reverse order (we're already calculated this for the U matrix)
+        // so Ux = y = M*b
+    vector<double>* y = new vector<double>;
+    vectorProduct( y , M , RHS );
+
+    // define upper triangular matrix
+    vector<vector<double>*>* U = new vector< vector<double>*>;
+    matrixProduct( U , M , H_matrix );
+
+    // backward substitution -> x = U\y
+    backwardSubstitution( solution , U , y );
+    cout << endl << " Solution to Hessian Matrix " << endl;
+    printMatrix( solution );
     return 0;
 }

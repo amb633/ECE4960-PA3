@@ -63,14 +63,14 @@ void fullSolver(){
 	// define upper triangular matrix
 	vector<vector<double>*>* U = new vector< vector<double>*>;
 	matrixProduct( U , M , matrix );
-	cout << "upper triangular matrix:" << endl;
-	printMatrix(U);
-	cout << endl;
+	//cout << "upper triangular matrix:" << endl;
+	//printMatrix(U);
+	//cout << endl;
 
 	// backward substitution -> x = U\y
 	vector<double> x;
 	backwardSubstitution( &x , U , &y );
-	printMatrix( &x );
+	//printMatrix( &x );
 
 	cout << endl;
 //    return 0;
