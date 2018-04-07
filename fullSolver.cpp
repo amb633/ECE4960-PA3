@@ -7,16 +7,13 @@ using namespace std;
 
 int conditionMatrix( vector<vector<double>*>* matrix );
 int printMatrix ( vector<vector<double>*>* matrix );
+int printMatrix( vector<double>* vector );
 int identityMatrix( vector<vector<double>*>* m , int rank );
 int zeroMatrix( vector<vector<double>*>* m , int rank );
 int calcAtomicVector( vector<vector<double>*>* m , vector<vector<double>*>* matrix, int row );
 int copyMatrix( vector<vector<double>*>* copy , vector<vector<double>*>* original );
 int matrixProduct( vector<vector<double>*>* result , vector<vector<double>*>* matrix_1 , vector<vector<double>*>* matrix_2 );
 int vectorProduct( vector<double>* y , vector<vector<double>*>* matrix , vector<double>* x );
-// remove if not required
-int invertAtomicMatrix( vector<vector<double>*>* inverse , vector<vector<double>*>* matrix , int col );
-// remove if not required
-int forwardSubstitution( vector<double>* y , vector<vector<double>*>* L , vector<double>* b );
 int backwardSubstitution( vector<double>* x , vector<vector<double>*>* U , vector<double>* y );
 
 int main(int argc, char const *argv[])
@@ -35,6 +32,8 @@ int main(int argc, char const *argv[])
 	row = new vector<double>;
 	(*row) = { 1 , 3 , 2 , 4 };
 	(*matrix).push_back(row);
+
+	vector<double> b = { -1 , 1 , 4 , -3 };
 
 	// get some information about the matrix
 	int rank = (*matrix).size();
@@ -63,11 +62,6 @@ int main(int argc, char const *argv[])
 
 	}
 
-	/*printMatrix(M_matrices[0]);
-	cout << endl;
-	printMatrix(M_matrices[1]);
-	cout << endl;*/
-
 	// multiply all the m matrices in reverse order
 	vector<vector<double>*>* M = new vector< vector<double>*>;
 	identityMatrix( M , rank );
@@ -75,9 +69,13 @@ int main(int argc, char const *argv[])
 	for ( int i = M_matrices.size() - 1 ; i >= 0 ; i-- ){
 		matrixProduct( M , M , M_matrices[i] );
 	}
-	vector<double> b = { -1 , 1 , 4 , -3 };
-	vector<double> y2;
-	vectorProduct( &y2 , M , &b );
+	
+	// no need to explicity calculate lower triangular matrix
+		// Ux = (L^-1)*b where L = (M1^-1)(M2^-1)(M3^-1)...
+		// so (L^-1) = ...(M3)(M2)(M1) -> in reverse order (we're already calculated this for the U matrix)
+		// so Ux = y = M*b
+	vector<double> y;
+	vectorProduct( &y , M , &b );
 	
 	// define upper triangular matrix
 	vector<vector<double>*>* U = new vector< vector<double>*>;
@@ -85,34 +83,11 @@ int main(int argc, char const *argv[])
 	cout << "upper triangular matrix:" << endl;
 	printMatrix(U);
 	cout << endl;
-	// define lower triangular matrix
-	/*vector<vector<double>*>* L = new vector< vector<double>*>;
-	identityMatrix( L , rank );
-	for ( int i = 0 ; i < M_matrices.size() ; i++ ){
-		invertAtomicMatrix( M_matrices[i] , M_matrices[i] , i );
-		matrixProduct( L , L , M_matrices[i]);
-	}
-	printMatrix(L);
-	cout << endl;
-	
-	// check if L*U returns the original matrix
-	vector<vector<double>*>* check = new vector< vector<double>*>;
-	matrixProduct( check , L , U );
-	printMatrix(check);
-	cout << endl;
-	// forward substitution -> find Ux = L\b
-	
-	forwardSubstitution( &y , L , &b );
-	for ( int i = 0 ; i < rank ; i++ ){
-		cout << y[i] << "   ";
-	}
-	cout << endl;*/
+
 	// backward substitution -> x = U\y
 	vector<double> x;
-	backwardSubstitution( &x , U , &y2 );
-	for ( int i = 0 ; i < rank ; i++ ){
-		cout << x[i] << "   ";
-	}
+	backwardSubstitution( &x , U , &y );
+	printMatrix( &x );
 
 	cout << endl;
 	return 0;
@@ -146,6 +121,7 @@ int conditionMatrix( vector<vector<double>*>* matrix ){
 }
 
 int printMatrix ( vector<vector<double>*>* matrix ){
+	// overloaded function to print matrix
 	int rank = (*matrix).size();
 	for ( int i = 0 ; i < rank ; i++ ){
 		for ( int j = 0 ; j < rank ; j++ ){
@@ -156,7 +132,18 @@ int printMatrix ( vector<vector<double>*>* matrix ){
 	return 0;
 }
 
+int printMatrix( vector<double>* vector ){
+	// overloaded function to print vector
+	int rank = (*vector).size();
+	for ( int i = 0 ; i < rank ; i++ ){
+		cout << (*vector)[i] << "   ";
+	}
+	cout << endl;
+	return 0;
+}
+
 int identityMatrix( vector<vector<double>*>* m , int rank ){
+	// function to create a identity matrix of size rank
 	vector<double>* row;
 	for ( int c = 0 ; c < rank ; c++ ){
 		row = new vector<double>;
@@ -170,6 +157,7 @@ int identityMatrix( vector<vector<double>*>* m , int rank ){
 }
 
 int zeroMatrix( vector<vector<double>*>* matrix , int rank ){
+	// function to create a zero matrix of size rank
 	vector<double>*row;
 	for( int c = 0 ; c < rank ; c++ ){
 		row = new vector<double>;
@@ -182,6 +170,8 @@ int zeroMatrix( vector<vector<double>*>* matrix , int rank ){
 }
 
 int calcAtomicVector( vector<vector<double>*>* m , vector<vector<double>*>* matrix, int row ){
+	// calculates the off diagonal elements for gaussian elimination where the current pivot is matrix[row][row]
+	// the coefficients are stored in m
 	int rank = (*matrix).size();
 	double pivot = (*(*matrix)[row])[row];
 	for ( int i = (row + 1) ; i < rank ; i++ ){
@@ -191,6 +181,7 @@ int calcAtomicVector( vector<vector<double>*>* m , vector<vector<double>*>* matr
 }
 
 int copyMatrix( vector<vector<double>*>* copy , vector<vector<double>*>* original ){
+	// creates a deep copy of a matrix
 	int rank = (*original).size();
 	zeroMatrix( copy , rank );
 	for ( int i = 0 ; i < rank ; i++ ){
@@ -233,42 +224,8 @@ int vectorProduct( vector<double>* y , vector<vector<double>*>* matrix , vector<
 	return 0;
 }
 
-int invertAtomicMatrix( vector<vector<double>*>* inverse , vector<vector<double>*>* matrix , int col ){
-	// only works for unit atomic matrices
-	int rank = (*matrix).size();
-	vector<vector<double>*>* temp = new vector<vector<double>*>;
-	zeroMatrix( temp , rank );
-	// first set the diagonals to 1.0
-	for ( int i = 0 ; i < rank ; i++ ){
-		(*(*temp)[i])[i] = 1.0;
-	}
-	// then change the size of the atomic vector
-	for ( int i = (col + 1) ; i < rank ; i++ ){
-		(*(*temp)[i])[col] = -(*(*matrix)[i])[col]; 
-	}
-	(*inverse) = (*temp);
-	return 0;
-}
-
-int forwardSubstitution( vector<double>* y , vector<vector<double>*>* L , vector<double>* b ){
-	int rank = (*L).size();
-	double temp = (*b)[0] /(*(*L)[0])[0];
-	(*y).push_back(temp);
-
-	double sum;
-
-	for ( int i = 1 ; i < rank ; i++ ){
-		sum = 0.0;
-		for ( int j = 0 ; j < i ; j++ ){
-			sum += (*y)[j]*(*(*L)[i])[j];
-		}
-		temp = ( (*b)[i] - sum )/(*(*L)[i])[i];
-		(*y).push_back(temp);
-	}
-	return 0;
-}
-
 int backwardSubstitution( vector<double>* x , vector<vector<double>*>* U , vector<double>* y ){
+	// backward sub to find x in Ux = y where U is upper triangular and y = (L^-1)b
 	int rank = (*y).size();
 	for ( int i = 0 ; i < rank ; i++ ){
 		(*x).push_back(0.0);
