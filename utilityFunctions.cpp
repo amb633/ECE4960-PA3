@@ -24,7 +24,7 @@ void readDataFile( string path , vector<double>* VGS , vector<double>* VDS , vec
     return;
 }
 
-double sum_of_squares( vector<double>* s_model , vector<double>* s_measured ){
+double sumSquares( vector<double>* s_model , vector<double>* s_measured ){
     // function to calculate the sum of squares
     // note: if you want the norm, you need to get the square root of sum
     if ( (*s_model).size() != (*s_measured).size() ){
@@ -39,7 +39,27 @@ double sum_of_squares( vector<double>* s_model , vector<double>* s_measured ){
     return sum;
 }
 
-void search_values( vector<double>* s_measured , vector<double>* VGS , vector<double>* VDS , vector<double>* IDS , double vgs , double vds ){
+double calculateIds( double vgs , double vds , double kappa , double vth , double is ){
+    // function to calculate the modelled ids values
+    double vt = 26e-5;
+    double term_1 = log(1.0 + exp( ( kappa*( vgs -  vth ) ) / ( 2*vt ) ));
+    term_1 = term_1*term_1;
+    double term_2 = log(1.0 + exp( ( kappa*( vgs - vth ) - vds ) / (2*vt) ));
+    term_2 = term_2*term_2;
+    return is*(term_1 - term_2);
+}
+
+void modelIds( vector<double>* IDS_model , vector<double>* VGS , vector<double>* VDS , double kappa , double vth , double is ){
+    for ( int i = 0 ; i < (*VGS).size() ; i++ ){
+        double vgs = (*VGS)[i];
+        double vds = (*VDS)[i];
+        double value = calculateIds( vgs , vds , kappa , vth , is );
+        (*IDS_model).push_back(value);
+    }
+    return;
+}
+
+void searchValues( vector<double>* s_measured , vector<double>* VGS , vector<double>* VDS , vector<double>* IDS , double vgs , double vds ){
     // ensure search values are in acceptable region
     if ( vgs < 0.5 || vgs > 5 ) {
         cout << "error in vgs search parameters" << endl;

@@ -24,13 +24,9 @@ int main(int argc, const char * argv[]) {
     vector<double>* VDS = new vector<double>;
     vector<double>* IDS = new vector<double>;   
     
-    string path = "/Users/arianabruno/Desktop/ECE4960/ProgrammingAssignments/ECE4960-PA3/outputNMOS.txt";
-//    string path = "C:/Users/Haritha/Documents/ECE4960-PAs/ECE4960-PA3/outputNMOS.txt";
+    //string path = "/Users/arianabruno/Desktop/ECE4960/ProgrammingAssignments/ECE4960-PA3/outputNMOS.txt";
+	string path = "C:/Users/Haritha/Documents/ECE4960-PAs/ECE4960-PA3/outputNMOS.txt";
     readDataFile( path , VGS ,  VDS ,  IDS );
-
-    vector<double>* s_measured = new vector<double>;
-    search_values( s_measured , VGS , VDS , IDS , 1.0 , 1.95 );
-    //printMatrix( s_measured);
     
     vector<double>* x_samples  = new vector<double>;
     vector<double>* y_samples  = new vector<double>;
