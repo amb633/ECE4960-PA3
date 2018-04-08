@@ -21,8 +21,8 @@ vector<double>* VGS = new vector<double>;
 vector<double>* VDS = new vector<double>;
 vector<double>* IDS = new vector<double>;
 
-string path = "/Users/arianabruno/Desktop/ECE4960/ProgrammingAssignments/ECE4960-PA3/outputNMOS.txt";
-//string path = "C:/Users/Haritha/Documents/ECE4960-PAs/ECE4960-PA3/outputNMOS.txt";
+//string path = "/Users/arianabruno/Desktop/ECE4960/ProgrammingAssignments/ECE4960-PA3/outputNMOS.txt";
+string path = "C:/Users/Haritha/Documents/ECE4960-PAs/ECE4960-PA3/outputNMOS.txt";
 
 
 int main(int argc, const char * argv[]) {
@@ -71,69 +71,22 @@ int main(int argc, const char * argv[]) {
         quasiNetwon_itr(VGS, VDS, IDS, current_parameters, updated_parameters, &norm_V, &norm_delta);
     }
 
-    vector<double>* kappa_history = new vector<double>;
-    vector<double>* vth_history = new vector<double>;
-    vector<double>* is_history = new vector<double>;
-    vector<double>* v_history = new vector<double>;
-    vector<double>* IDS_model = new vector<double>;
-
-    double kappa = 1.1;
-    double vth = 1.1;
-    double is = 5e-5;
-
-    modelIds( IDS_model , VGS , VDS , kappa , vth , is );
-    double v = sumSquares( IDS_model , IDS );
-
-    (*kappa_history).push_back(kappa);
-    (*vth_history).push_back(vth);
-    (*is_history).push_back(is);
-    (*v_history).push_back(v);
-    (*IDS_model).erase((*IDS_model).begin(), (*IDS_model).end());
-
-    kappa = 1.05;
-    vth = 1.05;
-    is = 2.5e-5;
-    modelIds( IDS_model , VGS , VDS , kappa , vth , is );
-    v = sumSquares( IDS_model , IDS );
-
-    (*kappa_history).push_back(kappa);
-    (*vth_history).push_back(vth);
-    (*is_history).push_back(is);
-    (*v_history).push_back(v);
-    (*IDS_model).erase((*IDS_model).begin(), (*IDS_model).end());
-
-    kappa = 1.0;
-    vth = 1.0;
-    is = 1e-7;
-    modelIds( IDS_model , VGS , VDS , kappa , vth , is );
-    v = sumSquares( IDS_model , IDS );
-
-    (*kappa_history).push_back(kappa);
-    (*vth_history).push_back(vth);
-    (*is_history).push_back(is);
-    (*v_history).push_back(v);
-    (*IDS_model).erase((*IDS_model).begin(), (*IDS_model).end());
-
-    printMatrix(v_history);
-    cout << endl;
-
-    vector<double>* gradients = new vector<double>;
-
-    secantGradient( gradients , kappa_history , vth_history , is_history , v_history );
-    printMatrix( gradients );
-
-    vector<vector<double>*>* hessians = new vector<vector<double>*>;
-    secantHessian( hessians , kappa_history , vth_history , is_history , vth_history );
-    printMatrix( hessians );
-    cout << endl;
-
-    vector<double>* delta = new vector<double>;
-
-    fullSolver( delta , hessians , gradients );
-
-    printMatrix( delta );
+    cout << " --------------- SECANT CONVERGENCE --------------- " << endl;
+    vector<double> guess_0 = { 1.1 , 1.1 , 5e-5 };
+    vector<double> guess_1 = { 1.05 , 1.05 , 2.5e-5 };
+    vector<double> guess_2 = { 1.0 , 1.0 , 1.0e-7 };
+    int iterations;
+    vector<double> parameter_solutions;
+    double relative_residual;
+    secantConvergence( iterations , &parameter_solutions , relative_residual , 
+        &guess_0 , &guess_1 , &guess_2 , VGS , VDS , IDS );
+    cout << endl << endl;
+    cout << " the converged solutions after " << iterations << " iterations are : " << endl;
+    cout << " kappa = " << parameter_solutions[0] << endl;
+    cout << " vth = " << parameter_solutions[1] << endl;
+    cout << " is = " << parameter_solutions[2] << endl;
+    cout << " relative residual error = " << relative_residual << endl;
 
     cout << endl;
-
     return 0;
 }
