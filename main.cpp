@@ -26,11 +26,11 @@ string path = "C:/Users/Haritha/Documents/ECE4960-PAs/ECE4960-PA3/outputNMOS.txt
 
 
 int main(int argc, const char * argv[]) {
-    // insert code here...
+    cout << endl << " -------- Task 2 : Parameter Extraction for Power Law -------- " << endl << endl;
    
     readDataFile( path , VGS ,  VDS ,  IDS );
     
-    /*vector<double>* x_samples  = new vector<double>;
+    vector<double>* x_samples  = new vector<double>;
     vector<double>* y_samples  = new vector<double>;
     vector<double>* noise_samples  = new vector<double>;
     vector<double>* y_noisey_samples  = new vector<double>;
@@ -47,10 +47,10 @@ int main(int argc, const char * argv[]) {
 //    solve for the parameters given H and RHS
     fullSolver( solution , H_matrix , RHS );
     
-    cout << "This is the solution for m and log(c0)" << endl;
+    cout << " This is the solution for m and log(c0)" << endl;
     printMatrix( solution );
-    cout << "m = " << (*solution)[0] << endl;
-    cout << "c0 = " << exp((*solution)[1]) << endl; */
+    cout << " m = " << (*solution)[0] << endl;
+    cout << " c0 = " << exp((*solution)[1]) << endl;
     
     cout << endl << " -------- Task 4A : Quasi Newton Parameter Extraction-------- " << endl << endl;
     
@@ -75,18 +75,26 @@ int main(int argc, const char * argv[]) {
         itr++;
     }
     
-    cout << "the converged solutions after " << itr << " iterations are: " << endl;
-    cout << "kappa = " << (*current_parameters)[0] << endl;
-    cout << "V_th = " << (*current_parameters)[1] << endl;
-    cout << "Is = " << (*current_parameters)[2] << endl;
-    cout << "absolute residual error = " << norm_delta_abs << endl;
-    cout << "relative residual error = " << norm_delta_rel << endl;
-    cout << "least squares = " << norm_V << endl;
+    cout << " the converged solutions after " << itr << " iterations are: " << endl;
+    cout << " kappa = " << (*current_parameters)[0] << endl;
+    cout << " V_th = " << (*current_parameters)[1] << endl;
+    cout << " Is = " << (*current_parameters)[2] << endl;
+    cout << " absolute residual error = " << norm_delta_abs << endl;
+    cout << " relative residual error = " << norm_delta_rel << endl;
+    cout << " least squares = " << norm_V << endl;
+    
+    double k_sensitivity = parameterSensitivity( current_parameters , 0.1 , 0 , VGS , VDS , IDS );
+    double Vth_sensitivity = parameterSensitivity ( current_parameters , 0.1 , 1 , VGS , VDS , IDS );
+    double Is_sensitivity = parameterSensitivity ( current_parameters , 0.1 , 2 , VGS , VDS , IDS );
+    cout << " sensitivity with respect to kappa = " << k_sensitivity << endl;
+    cout << " sensitivity with respect to vth   = " << Vth_sensitivity << endl;
+    cout << " sensitivity with respect to is    = " << Is_sensitivity << endl;
+    
     cout << endl;
     
-    cout << endl << " -------- Task 5A : Quasi Newton Parameter Extraction-------- " << endl << endl;
+    cout << endl << " -------- Task 5A : Normalized Quasi Newton Parameter Extraction-------- " << endl << endl;
     
-    cout << "for normalized soltions: " << endl << endl;
+    cout << " for normalized soltions: " << endl << endl;
     
     vector<double>* current_parameters_N = new vector<double>;
     (*current_parameters_N).push_back(k_0); (*current_parameters_N).push_back(Vth_0); (*current_parameters_N).push_back(Is_0);
@@ -105,14 +113,20 @@ int main(int argc, const char * argv[]) {
         itr_N++;
     }
     
-    cout << "the converged solutions after " << itr_N << " iterations are: " << endl;
-    cout << "kappa = " << (*current_parameters_N)[0] << endl;
-    cout << "V_th = " << (*current_parameters_N)[1] << endl;
-    cout << "Is = " << (*current_parameters_N)[2] << endl;
-    cout << "absolute residual error = " << norm_delta_abs_N << endl;
-    cout << "relative residual error = " << norm_delta_rel_N << endl;
-    cout << "least squares = " << norm_V_N << endl;
+    cout << " the converged solutions after " << itr_N << " iterations are: " << endl;
+    cout << " kappa = " << (*current_parameters_N)[0] << endl;
+    cout << " V_th = " << (*current_parameters_N)[1] << endl;
+    cout << " Is = " << (*current_parameters_N)[2] << endl;
+    cout << " absolute residual error = " << norm_delta_abs_N << endl;
+    cout << " relative residual error = " << norm_delta_rel_N << endl;
+    cout << " least squares = " << norm_V_N << endl;
     cout << endl;
+    double k_sensitivity_N = parameterSensitivity( current_parameters_N , 0.1 , 0 , VGS , VDS , IDS );
+    double Vth_sensitivity_N = parameterSensitivity ( current_parameters_N , 0.1 , 1 , VGS , VDS , IDS );
+    double Is_sensitivity_N = parameterSensitivity ( current_parameters_N , 0.1 , 2 , VGS , VDS , IDS );
+    cout << " sensitivity with respect to kappa = " << k_sensitivity_N << endl;
+    cout << " sensitivity with respect to vth   = " << Vth_sensitivity_N << endl;
+    cout << " sensitivity with respect to is    = " << Is_sensitivity_N << endl;
     
 
     cout << endl << endl;
