@@ -137,8 +137,36 @@ int main(int argc, const char * argv[]) {
     cout << " sensitivity with respect to is    = " << is_sensitivity << endl;
     
     cout << endl << endl;
-    cout << " --------------- Task 4B : Secant Convergence --------------- " << endl;
+    cout << " --------------- Task 5B : Normalized Secant Convergence --------------- " << endl;
     // use same initial guesses as above
+    //guess_2.erase(guess_2.begin(),guess_2.end());
+    //recurrenceRelation( &guess_2 , &guess_1 , &guess_0 ,VGS , VDS , IDS , true );
+    // reset some variables 
+    iterations = 0;
+    relative_residual = 1.0;
+    absolute_residual = 1.0;
+    least_squares =  1.0;
+    parameter_solutions.erase(parameter_solutions.begin(),parameter_solutions.end());
+
+    secantConvergence( iterations , &parameter_solutions , 
+        absolute_residual , relative_residual , least_squares ,
+        &guess_0 , &guess_1 , &guess_2 , VGS , VDS , IDS , true );
+
+    cout << endl;
+    cout << " the converged solutions after " << iterations << " iterations are : " << endl;
+    cout << " kappa = " << parameter_solutions[0] << endl;
+    cout << " vth = " << parameter_solutions[1] << endl;
+    cout << " is = " << parameter_solutions[2] << endl;
+    cout << " absolute residual error = " << absolute_residual << endl;
+    cout << " relative residual error = " << relative_residual << endl;
+    cout << " least squares = " << least_squares << endl;
+
+    kappa_sensitivity = parameterSensitivity( &parameter_solutions , 0.1 , 0 , VGS , VDS , IDS );
+    vth_sensitivity = parameterSensitivity ( &parameter_solutions , 0.1 , 1 , VGS , VDS , IDS );
+    is_sensitivity = parameterSensitivity ( &parameter_solutions , 0.1 , 2 , VGS , VDS , IDS );
+    cout << " sensitivity with respect to kappa = " << kappa_sensitivity << endl;
+    cout << " sensitivity with respect to vth   = " << vth_sensitivity << endl;
+    cout << " sensitivity with respect to is    = " << is_sensitivity << endl;
 
     cout << endl;
 

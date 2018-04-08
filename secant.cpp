@@ -1,14 +1,14 @@
 #include "secant.hpp"
 
 void recurrenceRelation( vector<double>* guess_2 , vector<double>* guess_1 , vector<double>* guess_0 ,
-	vector<double>* VGS , vector<double>* VDS , vector<double>* IDS ){
+	vector<double>* VGS , vector<double>* VDS , vector<double>* IDS , bool normalize ){
 	vector<double>* IDS_model = new vector<double>;
 	modelIds( IDS_model , VGS , VDS , (*guess_1)[0] , (*guess_1)[1] , (*guess_1)[2]);
-	double v_1 = sumSquares( IDS_model , IDS );
+	double v_1 = sumSquares( IDS_model , IDS , normalize );
 	
 	(*IDS_model).erase((*IDS_model).begin(), (*IDS_model).end()); 
 	modelIds( IDS_model , VGS , VDS , (*guess_0)[0] , (*guess_0)[1] , (*guess_0)[2]);
-	double v_0 = sumSquares( IDS_model , IDS );
+	double v_0 = sumSquares( IDS_model , IDS , normalize );
 	
 	double kappa_2 = (((*guess_0)[0])*v_1 - ((*guess_1)[0])*v_0) / (v_1 - v_0);
 	double vth_2 = (((*guess_0)[1])*v_1 - ((*guess_1)[1])*v_0) / (v_1 - v_0);
@@ -137,7 +137,8 @@ void secantConvergence( int& iterations , vector<double>* parameter_solutions ,
         counter++;
     }
     iterations = counter;
-    least_squares = v;
+    modelIds( IDS_model , VGS , VDS , kappa , vth , is );
+    least_squares = sumSquares( IDS_model , IDS , normalize );
     (*parameter_solutions).push_back(kappa);
     (*parameter_solutions).push_back(vth);
     (*parameter_solutions).push_back(is);
