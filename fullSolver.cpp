@@ -99,7 +99,7 @@ void printMatrix( vector<double>* vector ){
 	// overloaded function to print vector
 	int rank = (*vector).size();
 	for ( int i = 0 ; i < rank ; i++ ){
-		cout << (*vector)[i] << endl;
+		cout << (*vector)[i] << "   ";
 	}
 	cout << endl;
 //    return 0;

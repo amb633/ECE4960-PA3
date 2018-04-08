@@ -135,6 +135,7 @@ void secantConvergence( int& iterations , vector<double>* parameter_solutions ,
 
         //cout << counter << " : " << v << " : " << absolute_residual << endl;
         counter++;
+        if (counter > 5e4 ) break;
     }
     iterations = counter;
     modelIds( IDS_model , VGS , VDS , kappa , vth , is );
