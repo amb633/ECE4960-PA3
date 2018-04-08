@@ -72,7 +72,7 @@ void secantConvergence( int& iterations , vector<double>* parameter_solutions ,
     // now iterate until convergence
     int counter = 0;
     relative_residual = 1.0;
-    //for ( int i = 0 ; i < 10000 ; i++ ){
+    //for ( int i = 0 ; i < 100 ; i++ ){
     while ( relative_residual > 1e-7 ){
     	// calculate the current v
         modelIds( IDS_model , VGS , VDS , kappa , vth , is );
@@ -177,32 +177,6 @@ void secantHessian( vector<vector<double>*>* hessians , vector<double>* kappa_hi
 	(*(*hessians)[0])[0] = h_kappa;
 	(*(*hessians)[1])[1] = h_vth;
 	(*(*hessians)[2])[2] = h_is;
-
-	//double h_kappa = (((v_0 - v_1)/(kappa_0 - kappa_1)) - (( v_1 - v_2 )/(kappa_1 - kappa_2)))/(kappa_0 - kappa_1);
-	/*double h_kappa_vth   = (((v_0 - v_1)/(kappa_0 - kappa_1)) - (( v_1 - v_2 )/(kappa_1 - kappa_2)))/(vth_0 - vth_1);
-	double h_kappa_is   = (((v_0 - v_1)/(kappa_0 - kappa_1)) - (( v_1 - v_2 )/(kappa_1 - kappa_2)))/(is_0 - is_1);
-
-	double h_vth_kappa = ((( v_0 - v_1)/(vth_0 - vth_1)) - (( v_1 - v_2 )/(vth_1 - vth_2)))/(kappa_0 - kappa_1);*/
-	//double h_vth   = ((( v_0 - v_1)/(vth_0 - vth_1)) - (( v_1 - v_2 )/(vth_1 - vth_2)))/(vth_0 - vth_1);
-	/*double h_vth_is    = ((( v_0 - v_1)/(vth_0 - vth_1)) - (( v_1 - v_2 )/(vth_1 - vth_2)))/(is_0 - is_1);
-
-	double h_is_kappa = ((( v_0 - v_1)/(is_0 - is_1)) - (( v_1 - v_2 )/(is_1 - is_2)))/(kappa_0 - kappa_1);
-	double h_is_vth   = ((( v_0 - v_1)/(is_0 - is_1)) - (( v_1 - v_2 )/(is_1 - is_2)))/(vth_0 - vth_1);*/
-	//double h_is    = ((( v_0 - v_1)/(is_0 - is_1)) - (( v_1 - v_2 )/(is_1 - is_2)))/(is_0 - is_1);
-
-	/*zeroMatrix( hessians , 3 );
-	(*(*hessians)[0])[0] = h_kappa_kappa;
-	(*(*hessians)[1])[1] = h_vth_vth;
-	(*(*hessians)[2])[2] = h_is_is;
-
-	(*(*hessians)[0])[1] = h_kappa_vth;
-	(*(*hessians)[0])[2] = h_kappa_is;
-
-	(*(*hessians)[1])[0] = h_vth_kappa;
-	(*(*hessians)[1])[1] = h_vth_is;
-
-	(*(*hessians)[2])[0] = h_is_kappa;
-	(*(*hessians)[2])[1] = h_is_vth;*/
 
 	return;
 }
