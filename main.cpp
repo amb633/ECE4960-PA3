@@ -13,7 +13,7 @@
 #include <cstdlib>
 #include "fullSolver.hpp"
 #include "generateSample.hpp"
-#include "utilityFunctions.hpp"
+//#include "utilityFunctions.hpp"
 #include "quasiNewtonMethod.hpp"
 #include "secant.hpp"
 
@@ -21,8 +21,8 @@ vector<double>* VGS = new vector<double>;
 vector<double>* VDS = new vector<double>;
 vector<double>* IDS = new vector<double>;
 
-string path = "/Users/arianabruno/Desktop/ECE4960/ProgrammingAssignments/ECE4960-PA3/outputNMOS.txt";
-//string path = "C:/Users/Haritha/Documents/ECE4960-PAs/ECE4960-PA3/outputNMOS.txt";
+//string path = "/Users/arianabruno/Desktop/ECE4960/ProgrammingAssignments/ECE4960-PA3/outputNMOS.txt";
+string path = "C:/Users/Haritha/Documents/ECE4960-PAs/ECE4960-PA3/outputNMOS.txt";
 
 
 int main(int argc, const char * argv[]) {
@@ -81,7 +81,9 @@ int main(int argc, const char * argv[]) {
     cout << "least squares = " << norm_V << endl;
     cout << endl;
 
-    cout << " --------------- Secant Parameter Extraction --------------- " << endl;
+
+    cout << endl << endl;
+    cout << " --------------- Task 4B : Secant Convergence --------------- " << endl;
     // two initial guesses
     // parameters in the following order: kappa , vth , is
     vector<double> guess_0 = { 1.25 , 1.1 , 2.5e-7 };
@@ -133,6 +135,10 @@ int main(int argc, const char * argv[]) {
     cout << " sensitivity with respect to kappa = " << kappa_sensitivity << endl;
     cout << " sensitivity with respect to vth   = " << vth_sensitivity << endl;
     cout << " sensitivity with respect to is    = " << is_sensitivity << endl;
+    
+    cout << endl << endl;
+    cout << " --------------- Task 4B : Secant Convergence --------------- " << endl;
+    // use same initial guesses as above
 
     cout << endl;
 

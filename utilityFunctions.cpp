@@ -24,7 +24,7 @@ void readDataFile( string path , vector<double>* VGS , vector<double>* VDS , vec
     return;
 }
 
-double sumSquares( vector<double>* s_model , vector<double>* s_measured ){
+double sumSquares( vector<double>* s_model , vector<double>* s_measured , bool n ){
     // function to calculate the sum of squares
     // note: if you want the norm, you need to get the square root of sum
     if ( (*s_model).size() != (*s_measured).size() ){
@@ -32,9 +32,17 @@ double sumSquares( vector<double>* s_model , vector<double>* s_measured ){
         return -1.0;
     }
     double sum = 0.0;
-    for ( int i = 0 ; i < (*s_model).size() ; i++ ){
-        double temp = (*s_model)[i] - (*s_measured)[i];
-        sum += temp*temp;
+    if ( !n ){
+        for ( int i = 0 ; i < (*s_model).size() ; i++ ){
+            double temp = (*s_model)[i] - (*s_measured)[i];
+            sum += temp*temp;
+        }
+    }
+    else if ( n ){
+        for ( int i = 0 ; i < (*s_model).size() ; i++ ){
+            double temp = 1.0-((*s_model)[i])/((*s_measured)[i]);
+            sum += temp*temp;
+        }
     }
     return sum;
 }
@@ -154,4 +162,3 @@ void scaleVector( double scalar, vector<double>* a,  vector<double>* result){
         (*result).push_back((*a)[i]*scalar);
     }
 }
-

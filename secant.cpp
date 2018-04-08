@@ -23,7 +23,8 @@ void recurrenceRelation( vector<double>* guess_2 , vector<double>* guess_1 , vec
 void secantConvergence( int& iterations , vector<double>* parameter_solutions , 
 	double& absolute_residual , double& relative_residual , double& least_squares ,
 	vector<double>* guess_0 , vector<double>* guess_1 , vector<double>* guess_2 , 
-	vector<double>* VGS , vector<double>* VDS , vector<double>* IDS ){
+	vector<double>* VGS , vector<double>* VDS , vector<double>* IDS ,
+	bool normalize ){
 
 	// initialize vectors required for storing data
 	vector<double>* kappa_history = new vector<double>;
@@ -40,7 +41,7 @@ void secantConvergence( int& iterations , vector<double>* parameter_solutions ,
 	vth = (*guess_0)[1];
 	is = (*guess_0)[2];
 	modelIds( IDS_model , VGS , VDS , kappa , vth , is );
-	v = sumSquares( IDS_model , IDS );
+	v = sumSquares( IDS_model , IDS , normalize );
 	// store values from the first guess
 	(*kappa_history).push_back(kappa);
     (*vth_history).push_back(vth);
@@ -54,7 +55,7 @@ void secantConvergence( int& iterations , vector<double>* parameter_solutions ,
 	vth = (*guess_1)[1];
 	is = (*guess_1)[2];
 	modelIds( IDS_model , VGS , VDS , kappa , vth , is );
-	v = sumSquares( IDS_model , IDS );
+	v = sumSquares( IDS_model , IDS , normalize );
 
 	(*kappa_history).push_back(kappa);
     (*vth_history).push_back(vth);
@@ -67,7 +68,7 @@ void secantConvergence( int& iterations , vector<double>* parameter_solutions ,
 	vth = (*guess_2)[1];
 	is = (*guess_2)[2];
 	modelIds( IDS_model , VGS , VDS , kappa , vth , is );
-	v = sumSquares( IDS_model , IDS );
+	v = sumSquares( IDS_model , IDS , normalize );
 	(*kappa_history).push_back(kappa);
     (*vth_history).push_back(vth);
     (*is_history).push_back(is);
@@ -96,7 +97,7 @@ void secantConvergence( int& iterations , vector<double>* parameter_solutions ,
     while ( relative_residual > 1e-9 ){
     	// calculate the current v
         modelIds( IDS_model , VGS , VDS , kappa , vth , is );
-        v = sumSquares( IDS_model , IDS );
+        v = sumSquares( IDS_model , IDS , normalize );
 
         // erase the "oldest" position
         (*kappa_history).erase((*kappa_history).begin());
