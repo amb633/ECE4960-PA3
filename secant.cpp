@@ -1,5 +1,25 @@
 #include "secant.hpp"
 
+void recurrenceRelation( vector<double>* guess_2 , vector<double>* guess_1 , vector<double>* guess_0 ,
+	vector<double>* VGS , vector<double>* VDS , vector<double>* IDS ){
+	vector<double>* IDS_model = new vector<double>;
+	modelIds( IDS_model , VGS , VDS , (*guess_1)[0] , (*guess_1)[1] , (*guess_1)[2]);
+	double v_1 = sumSquares( IDS_model , IDS );
+	
+	(*IDS_model).erase((*IDS_model).begin(), (*IDS_model).end()); 
+	modelIds( IDS_model , VGS , VDS , (*guess_0)[0] , (*guess_0)[1] , (*guess_0)[2]);
+	double v_0 = sumSquares( IDS_model , IDS );
+	
+	double kappa_2 = (((*guess_0)[0])*v_1 - ((*guess_1)[0])*v_0) / (v_1 - v_0);
+	double vth_2 = (((*guess_0)[1])*v_1 - ((*guess_1)[1])*v_0) / (v_1 - v_0);
+	double is_2 = (((*guess_0)[2])*v_1 - ((*guess_1)[2])*v_0) / (v_1 - v_0);
+	
+	(*guess_2).push_back(kappa_2);
+	(*guess_2).push_back(vth_2);
+	(*guess_2).push_back(is_2);
+	return;
+}
+
 void secantConvergence( int& iterations , vector<double>* parameter_solutions , 
 	double& absolute_residual , double& relative_residual , double& least_squares ,
 	vector<double>* guess_0 , vector<double>* guess_1 , vector<double>* guess_2 , 
@@ -73,7 +93,7 @@ void secantConvergence( int& iterations , vector<double>* parameter_solutions ,
     int counter = 0;
     relative_residual = 1.0;
     //for ( int i = 0 ; i < 100 ; i++ ){
-    while ( relative_residual > 1e-7 ){
+    while ( absolute_residual > 1e-9 ){
     	// calculate the current v
         modelIds( IDS_model , VGS , VDS , kappa , vth , is );
         v = sumSquares( IDS_model , IDS );
@@ -111,7 +131,7 @@ void secantConvergence( int& iterations , vector<double>* parameter_solutions ,
 	    }
 	    absolute_residual = sqrt(absolute_residual);
         relative_residual = absolute_residual/v;
-        //cout << counter << " : " << v << " : " << residual << endl;
+        cout << counter << " : " << v << " : " << absolute_residual << endl;
         counter++;
     }
     iterations = counter;

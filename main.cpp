@@ -72,15 +72,23 @@ int main(int argc, const char * argv[]) {
     }
 
     cout << " --------------- SECANT CONVERGENCE --------------- " << endl;
-    vector<double> guess_0 = { 1.1 , 1.1 , 5e-5 };
-    vector<double> guess_1 = { 1.05 , 1.05 , 2.5e-5 };
-    vector<double> guess_2 = { 1.0 , 1.0 , 1.0e-7 };
+    // two initial guesses
+    vector<double> guess_0 = { 1.05 , 1.05 , 2.5e-7 };
+    vector<double> guess_1 = { 1.0 , 1.0 , 1.0e-7 };
+    // third guess using recurrence relation
+    vector<double> guess_2;
+    recurrenceRelation( &guess_2 , &guess_1 , &guess_0 ,VGS , VDS , IDS );
+    //printMatrix( &guess_2 );
+
+    // call the simple secant method for convergence
     int iterations;
     vector<double> parameter_solutions;
     double relative_residual , absolute_residual , least_squares;
+
     secantConvergence( iterations , &parameter_solutions , 
         absolute_residual , relative_residual , least_squares ,
         &guess_0 , &guess_1 , &guess_2 , VGS , VDS , IDS );
+
     cout << endl << endl;
     cout << " the converged solutions after " << iterations << " iterations are : " << endl;
     cout << " kappa = " << parameter_solutions[0] << endl;
