@@ -15,6 +15,7 @@
 #include "generateSample.hpp"
 #include "utilityFunctions.hpp"
 #include "quasiNewtonMethod.hpp"
+#include "secant.hpp"
 
 vector<double>* VGS = new vector<double>;
 vector<double>* VDS = new vector<double>;
@@ -26,10 +27,10 @@ string path = "/Users/arianabruno/Desktop/ECE4960/ProgrammingAssignments/ECE4960
 
 int main(int argc, const char * argv[]) {
     // insert code here...
-    
+   
     readDataFile( path , VGS ,  VDS ,  IDS );
     
-    vector<double>* x_samples  = new vector<double>;
+    /*vector<double>* x_samples  = new vector<double>;
     vector<double>* y_samples  = new vector<double>;
     vector<double>* noise_samples  = new vector<double>;
     vector<double>* y_noisey_samples  = new vector<double>;
@@ -49,7 +50,7 @@ int main(int argc, const char * argv[]) {
     cout << "This is the solution for m and log(c0)" << endl;
     printMatrix( solution );
     cout << "m = " << (*solution)[0] << endl;
-    cout << "c0 = " << exp((*solution)[1]) << endl;
+    cout << "c0 = " << exp((*solution)[1]) << endl; */
     
     cout << endl << "Quasi Newton Parameter Extraction" << endl << endl;
     double k_0 = 1.0;
@@ -69,7 +70,70 @@ int main(int argc, const char * argv[]) {
         vector<double>* updated_parameters = new vector<double>;
         quasiNetwon_itr(VGS, VDS, IDS, current_parameters, updated_parameters, &norm_V, &norm_delta);
     }
-    
-    
+
+    vector<double>* kappa_history = new vector<double>;
+    vector<double>* vth_history = new vector<double>;
+    vector<double>* is_history = new vector<double>;
+    vector<double>* v_history = new vector<double>;
+    vector<double>* IDS_model = new vector<double>;
+
+    double kappa = 1.1;
+    double vth = 1.1;
+    double is = 5e-5;
+
+    modelIds( IDS_model , VGS , VDS , kappa , vth , is );
+    double v = sumSquares( IDS_model , IDS );
+
+    (*kappa_history).push_back(kappa);
+    (*vth_history).push_back(vth);
+    (*is_history).push_back(is);
+    (*v_history).push_back(v);
+    (*IDS_model).erase((*IDS_model).begin(), (*IDS_model).end());
+
+    kappa = 1.05;
+    vth = 1.05;
+    is = 2.5e-5;
+    modelIds( IDS_model , VGS , VDS , kappa , vth , is );
+    v = sumSquares( IDS_model , IDS );
+
+    (*kappa_history).push_back(kappa);
+    (*vth_history).push_back(vth);
+    (*is_history).push_back(is);
+    (*v_history).push_back(v);
+    (*IDS_model).erase((*IDS_model).begin(), (*IDS_model).end());
+
+    kappa = 1.0;
+    vth = 1.0;
+    is = 1e-7;
+    modelIds( IDS_model , VGS , VDS , kappa , vth , is );
+    v = sumSquares( IDS_model , IDS );
+
+    (*kappa_history).push_back(kappa);
+    (*vth_history).push_back(vth);
+    (*is_history).push_back(is);
+    (*v_history).push_back(v);
+    (*IDS_model).erase((*IDS_model).begin(), (*IDS_model).end());
+
+    printMatrix(v_history);
+    cout << endl;
+
+    vector<double>* gradients = new vector<double>;
+
+    secantGradient( gradients , kappa_history , vth_history , is_history , v_history );
+    printMatrix( gradients );
+
+    vector<vector<double>*>* hessians = new vector<vector<double>*>;
+    secantHessian( hessians , kappa_history , vth_history , is_history , vth_history );
+    printMatrix( hessians );
+    cout << endl;
+
+    vector<double>* delta = new vector<double>;
+
+    fullSolver( delta , hessians , gradients );
+
+    printMatrix( delta );
+
+    cout << endl;
+
     return 0;
 }
