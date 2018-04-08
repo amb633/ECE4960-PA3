@@ -93,7 +93,7 @@ void secantConvergence( int& iterations , vector<double>* parameter_solutions ,
     int counter = 0;
     relative_residual = 1.0;
     //for ( int i = 0 ; i < 100 ; i++ ){
-    while ( absolute_residual > 1e-9 ){
+    while ( relative_residual > 1e-9 ){
     	// calculate the current v
         modelIds( IDS_model , VGS , VDS , kappa , vth , is );
         v = sumSquares( IDS_model , IDS );
@@ -120,18 +120,19 @@ void secantConvergence( int& iterations , vector<double>* parameter_solutions ,
         secantHessian( hessians , kappa_history , vth_history , is_history , v_history ); 
         
         fullSolver( delta , hessians , gradients );
-        // update variables for next iteration
+          
+        // covergence criteria taken to be the relative residual
+        absolute_residual = ((*delta)[0])*((*delta)[0]) + ((*delta)[1])*((*delta)[1]) + ((*delta)[2])*((*delta)[2]);
+        absolute_residual = absolute_residual;
+
+        relative_residual = (((*delta)[0])*((*delta)[0]))/(kappa*kappa) + (((*delta)[1])*((*delta)[1]))/(vth*vth) + (((*delta)[2])*((*delta)[2]))/(is*is);
+
+        // update variables for next iteration 
         kappa -= (*delta)[0];
         vth -= (*delta)[1];
-        is -= (*delta)[2];   
-        // covergence criteria taken to be the relative residual
-        absolute_residual = 0.0;
-	    for ( int i = 0 ; i < (*delta).size() ; i++ ){
-	    	absolute_residual += ((*delta)[i])*((*delta)[i]);
-	    }
-	    absolute_residual = sqrt(absolute_residual);
-        relative_residual = absolute_residual/v;
-        cout << counter << " : " << v << " : " << absolute_residual << endl;
+        is -= (*delta)[2];
+
+        //cout << counter << " : " << v << " : " << absolute_residual << endl;
         counter++;
     }
     iterations = counter;

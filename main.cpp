@@ -89,7 +89,7 @@ int main(int argc, const char * argv[]) {
         absolute_residual , relative_residual , least_squares ,
         &guess_0 , &guess_1 , &guess_2 , VGS , VDS , IDS );
 
-    cout << endl << endl;
+    cout << endl;
     cout << " the converged solutions after " << iterations << " iterations are : " << endl;
     cout << " kappa = " << parameter_solutions[0] << endl;
     cout << " vth = " << parameter_solutions[1] << endl;
@@ -97,6 +97,14 @@ int main(int argc, const char * argv[]) {
     cout << " absolute residual error = " << absolute_residual << endl;
     cout << " relative residual error = " << relative_residual << endl;
     cout << " least squares = " << least_squares << endl;
+
+    // parameter sensitivity analysis
+    double kappa_sensitivity = parameterSensitivity( &parameter_solutions , 0.1 , 0 , VGS , VDS , IDS );
+    double vth_sensitivity = parameterSensitivity ( &parameter_solutions , 0.1 , 1 , VGS , VDS , IDS );
+    double is_sensitivity = parameterSensitivity ( &parameter_solutions , 1e-8 , 2 , VGS , VDS , IDS );
+    cout << " sensitivity with respect to kappa = " << kappa_sensitivity << endl;
+    cout << " sensitivity with respect to vth   = " << vth_sensitivity << endl;
+    cout << " sensitivity with respect to is    = " << is_sensitivity << endl;
 
     cout << endl;
     return 0;
