@@ -131,7 +131,7 @@ int main(int argc, const char * argv[]) {
      */
     double kappa_sensitivity = parameterSensitivity( &parameter_solutions , 0.1 , 0 , VGS , VDS , IDS );
     double vth_sensitivity = parameterSensitivity ( &parameter_solutions , 0.1 , 1 , VGS , VDS , IDS );
-    double is_sensitivity = parameterSensitivity ( &parameter_solutions , 1e-8 , 2 , VGS , VDS , IDS );
+    double is_sensitivity = parameterSensitivity ( &parameter_solutions , 0.1 , 2 , VGS , VDS , IDS );
     cout << " sensitivity with respect to kappa = " << kappa_sensitivity << endl;
     cout << " sensitivity with respect to vth   = " << vth_sensitivity << endl;
     cout << " sensitivity with respect to is    = " << is_sensitivity << endl;

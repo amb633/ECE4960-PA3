@@ -142,9 +142,9 @@ double parameterSensitivity( vector<double>* parameters , double pertubation , i
     double is_new = is;
 
     switch( which ){
-        case 0: kappa_new += pertubation; break;
-        case 1: vth_new += pertubation; break;
-        case 2: is_new += pertubation; break;
+        case 0: kappa_new *= (1.0+pertubation); break;
+        case 1: vth_new *= (1.0+pertubation); break;
+        case 2: is_new *= (1.0+pertubation); break;
         default: cout << "no valid parameter chosen for sensitivity analysis" << endl; return 0.0;
     }
 
