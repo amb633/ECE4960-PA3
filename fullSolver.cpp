@@ -7,6 +7,7 @@ void fullSolver( vector<double>* solution , vector< vector<double>*>* matrix , v
 	
 	// condition the matrix through partial row pivoting
 	conditionMatrix( matrix );
+	//printMatrix( matrix );
 
 	// create a dummy copy of matrix
 	vector< vector<double>*>* dummy = new vector< vector<double>*>;
@@ -61,18 +62,18 @@ void conditionMatrix( vector<vector<double>*>* matrix ){
 
 	// iterate over each column
 	for ( int col = 0 ; col < rank ; col++ ){
-
+		printMatrix(matrix);
 		double max = 0.0;
 		int max_row = col;
 
 		// search for the max value along current column
 		for ( int i = col ; i < rank ; i++ ){
-			if ( abs((*(*matrix)[i])[col]) > max ) {
-				max = (*(*matrix)[i])[col];
+			double v = abs((*(*matrix)[i])[col]);
+			if ( v > max ) {
+				max = v;
 				max_row = i;
 			}
 		}
-
 		// swap row with max_row
 		vector<double> temp = (*(*matrix)[col]);
 		(*(*matrix)[col]) = (*(*matrix)[max_row]);
@@ -90,14 +91,14 @@ void printMatrix ( vector<vector<double>*>* matrix ){
 		}
 		cout << endl;
 	}
-//    return 0;
+	cout << endl;
 }
 
 void printMatrix( vector<double>* vector ){
 	// overloaded function to print vector
 	int rank = (*vector).size();
 	for ( int i = 0 ; i < rank ; i++ ){
-		cout << (*vector)[i] << "   ";
+		cout << (*vector)[i] << endl;
 	}
 	cout << endl;
 //    return 0;

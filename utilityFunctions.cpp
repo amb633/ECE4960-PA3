@@ -44,7 +44,7 @@ double calculateIds( double vgs , double vds , double kappa , double vth , doubl
     double vt = 26e-3;
     double term_1 = log(1.0 + exp( ( kappa*( vgs -  vth ) ) / ( 2*vt ) ));
     term_1 = term_1*term_1;
-    double term_2 = log(1.0 + exp( ( kappa*( vgs - vth ) - vds ) / (2*vt) ));
+    double term_2 = log(1.0 + exp( ( kappa*(vgs-vth)-vds ) / (2*vt) ));
     term_2 = term_2*term_2;
     return is*(term_1 - term_2);
 }
