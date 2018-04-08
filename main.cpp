@@ -73,18 +73,30 @@ int main(int argc, const char * argv[]) {
 
     cout << " --------------- SECANT CONVERGENCE --------------- " << endl;
     // two initial guesses
-    vector<double> guess_0 = { 1.05 , 1.05 , 2.5e-7 };
+    // parameters in the following order: kappa , vth , is
+    vector<double> guess_0 = { 1.25 , 1.1 , 2.5e-7 };
     vector<double> guess_1 = { 1.0 , 1.0 , 1.0e-7 };
     // third guess using recurrence relation
     vector<double> guess_2;
     recurrenceRelation( &guess_2 , &guess_1 , &guess_0 ,VGS , VDS , IDS );
     //printMatrix( &guess_2 );
 
-    // call the simple secant method for convergence
-    int iterations;
-    vector<double> parameter_solutions;
-    double relative_residual , absolute_residual , least_squares;
+    // declare some variables for storing convergence answers
+    int iterations; 
+    vector<double> parameter_solutions; 
+    double relative_residual , absolute_residual , least_squares; 
 
+    // call the simple secant method for convergence
+    /* input parameters are as follows:
+     * iterations -> where the number of interations it took for the solution to converge will be stored
+     * parameter_solutions -> to store the converged solutions
+     * absolute , relative residuals -> to store the values of the residuals
+     * least squares -> to store the least squares value after convergence
+     * guess_0 -> oldest guess
+     * guess_1 -> next guess
+     * guess_2 -> third data point from the recurrence relation
+     * VGS, VDS, IDS -> data from the file
+     */
     secantConvergence( iterations , &parameter_solutions , 
         absolute_residual , relative_residual , least_squares ,
         &guess_0 , &guess_1 , &guess_2 , VGS , VDS , IDS );
@@ -99,6 +111,12 @@ int main(int argc, const char * argv[]) {
     cout << " least squares = " << least_squares << endl;
 
     // parameter sensitivity analysis
+    /* input parameters are as follows:
+     * parameter_solutions -> solution from convergence above
+     * pertubation -> amount by which to disturb the parameter for analysis
+     * which -> which parameter to perturb: 0 is kappa , 1 is vth and 2 is is
+     * VGS, VDS, IDS -> data from the file
+     */
     double kappa_sensitivity = parameterSensitivity( &parameter_solutions , 0.1 , 0 , VGS , VDS , IDS );
     double vth_sensitivity = parameterSensitivity ( &parameter_solutions , 0.1 , 1 , VGS , VDS , IDS );
     double is_sensitivity = parameterSensitivity ( &parameter_solutions , 1e-8 , 2 , VGS , VDS , IDS );
