@@ -77,15 +77,18 @@ int main(int argc, const char * argv[]) {
     vector<double> guess_2 = { 1.0 , 1.0 , 1.0e-7 };
     int iterations;
     vector<double> parameter_solutions;
-    double relative_residual;
-    secantConvergence( iterations , &parameter_solutions , relative_residual , 
+    double relative_residual , absolute_residual , least_squares;
+    secantConvergence( iterations , &parameter_solutions , 
+        absolute_residual , relative_residual , least_squares ,
         &guess_0 , &guess_1 , &guess_2 , VGS , VDS , IDS );
     cout << endl << endl;
     cout << " the converged solutions after " << iterations << " iterations are : " << endl;
     cout << " kappa = " << parameter_solutions[0] << endl;
     cout << " vth = " << parameter_solutions[1] << endl;
     cout << " is = " << parameter_solutions[2] << endl;
+    cout << " absolute residual error = " << absolute_residual << endl;
     cout << " relative residual error = " << relative_residual << endl;
+    cout << " least squares = " << least_squares << endl;
 
     cout << endl;
     return 0;

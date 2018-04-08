@@ -1,6 +1,7 @@
 #include "secant.hpp"
 
-void secantConvergence( int& iterations , vector<double>* parameter_solutions , double& relative_residual ,
+void secantConvergence( int& iterations , vector<double>* parameter_solutions , 
+	double& absolute_residual , double& relative_residual , double& least_squares ,
 	vector<double>* guess_0 , vector<double>* guess_1 , vector<double>* guess_2 , 
 	vector<double>* VGS , vector<double>* VDS , vector<double>* IDS ){
 
@@ -70,9 +71,9 @@ void secantConvergence( int& iterations , vector<double>* parameter_solutions , 
 
     // now iterate until convergence
     int counter = 0;
-    double residual = 1.0;
+    relative_residual = 1.0;
     //for ( int i = 0 ; i < 10000 ; i++ ){
-    while ( residual > 1e-7 ){
+    while ( relative_residual > 1e-7 ){
     	// calculate the current v
         modelIds( IDS_model , VGS , VDS , kappa , vth , is );
         v = sumSquares( IDS_model , IDS );
@@ -103,19 +104,22 @@ void secantConvergence( int& iterations , vector<double>* parameter_solutions , 
         kappa -= (*delta)[0];
         vth -= (*delta)[1];
         is -= (*delta)[2];   
-        // covergence criteria taken to be the maximum relative residual
-        double max = abs((*delta)[0]);
-        if ( abs((*delta)[1]) > max ) max = abs((*delta)[1]);
-        if ( abs((*delta)[2]) > max ) max = abs((*delta)[2]);
-        residual = max/v;
+        // covergence criteria taken to be the relative residual
+        absolute_residual = 0.0;
+	    for ( int i = 0 ; i < (*delta).size() ; i++ ){
+	    	absolute_residual += ((*delta)[i])*((*delta)[i]);
+	    }
+	    absolute_residual = sqrt(absolute_residual);
+        relative_residual = absolute_residual/v;
         //cout << counter << " : " << v << " : " << residual << endl;
         counter++;
     }
     iterations = counter;
+    least_squares = v;
     (*parameter_solutions).push_back(kappa);
     (*parameter_solutions).push_back(vth);
     (*parameter_solutions).push_back(is);
-    relative_residual = residual;
+    return;
 
 }
 
