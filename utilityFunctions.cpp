@@ -41,7 +41,7 @@ double sumSquares( vector<double>* s_model , vector<double>* s_measured ){
 
 double calculateIds( double vgs , double vds , double kappa , double vth , double is ){
     // function to calculate the modelled ids values
-    double vt = 26e-5;
+    double vt = 26e-3;
     double term_1 = log(1.0 + exp( ( kappa*( vgs -  vth ) ) / ( 2*vt ) ));
     term_1 = term_1*term_1;
     double term_2 = log(1.0 + exp( ( kappa*( vgs - vth ) - vds ) / (2*vt) ));
@@ -90,4 +90,22 @@ void searchValues( vector<double>* s_measured , vector<double>* VGS , vector<dou
     (*s_measured).push_back(vds);
     (*s_measured).push_back(ids);
     return;
+}
+
+void add_vectors( vector<double>* x,  vector<double>* dx,  vector<double>* sum ){
+    if((*x).size() != (*dx).size()){
+        cout << "vectors have different dimensions... cannot add them togther! " << endl;
+    }else{
+        for( int i = 0; i < (*x).size(); i++){
+            (*sum).push_back((*x)[i] + (*dx)[i]);
+        }
+    }
+}
+
+double delta_norm_2( vector<double>* delta_a, vector<double>* a ){
+    double norm = 0.0;
+    for(int i = 0; i<(*a).size(); i++){
+        norm = norm + (pow((*delta_a)[i], 2)/pow((*a)[i], 2));
+    }
+    return norm;
 }

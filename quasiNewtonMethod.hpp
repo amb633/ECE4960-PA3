@@ -12,10 +12,10 @@
 #include <stdio.h>
 #include <vector>
 #include "fullSolver.hpp"
-#include "utilityFunctions.cpp"
+#include "utilityFunctions.hpp"
 
 using namespace std;
 
-void quasiNetwon(vector<double>* VGS , vector<double>* VDS );
-
+void quasiNetwon_dx(vector<double>* VGS , vector<double>* VDS, vector<double>* IDS, double k, double Vth, double Is, vector<double>* delta_x);
+void quasiNetwon_itr( vector<double>* VGS , vector<double>* VDS, vector<double>* IDS, vector<double>* current_paramters,  vector<double>* new_parameters, double* norm_V, double* norm_delta);
 #endif /* quasiNewtonMethod_hpp */
