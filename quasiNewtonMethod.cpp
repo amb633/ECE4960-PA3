@@ -66,16 +66,57 @@ void quasiNetwon_dx(vector<double>* VGS , vector<double>* VDS, vector<double>* I
 //    printMatrix(H);
     
     fullSolver( delta_x , H , v_grad );
+    for(int i = 0; i<(*delta_x).size(); i++){
+        (*delta_x)[i] = (-1.0)* (*delta_x)[i];
+    }
 //    printMatrix(delta_x);
 }
 
-void quasiNetwon_itr( vector<double>* VGS , vector<double>* VDS, vector<double>* IDS, vector<double>* current_paramters,  vector<double>* new_parameters, double* norm_V, double* norm_delta){
+double t_adjusted_sum_sq( vector<double>* VGS, vector<double>* VDS, vector<double>* IDS, double t, vector<double>* delta, vector<double>* paramters){
+    
+    vector<double>* delta_adjusted = new vector<double>;
+    scaleVector(t, delta, delta_adjusted);
+    
+    vector<double>* Ids_t_adjusted = new vector<double>;
+    vector<double>* new_adjusted_paramters = new vector<double>;
+    
+    add_vectors(paramters, delta_adjusted, new_adjusted_paramters);
+    modelIds(Ids_t_adjusted, VGS, VDS, (*new_adjusted_paramters)[0], (*new_adjusted_paramters)[1], (*new_adjusted_paramters)[2]);
+    
+    return sumSquares(Ids_t_adjusted, IDS);
+}
+
+double linear_search( vector<double>* VGS , vector<double>* VDS, vector<double>* IDS, vector<double>* paramters, vector<double>* delta, double t_min = 0.0, double t_max = 1.0 ){
+    
+    
+    double t_mid = (t_min+t_max)/2.0;
+    double t_mid_adj_sum_sqs = t_adjusted_sum_sq( VGS, VDS, IDS, t_mid, delta, paramters);
+    double t_min_adj_sum_sqs = t_adjusted_sum_sq( VGS, VDS, IDS, t_min, delta, paramters);
+    double t_max_adj_sum_sqs = t_adjusted_sum_sq( VGS, VDS, IDS, t_max, delta, paramters);
+    
+
+    double t_opt = t_mid;
+    double sum_sq_opt = t_mid_adj_sum_sqs;
+    
+    if( isnan(t_max_adj_sum_sqs) || isnan(t_mid_adj_sum_sqs)){
+        t_opt = linear_search( VGS , VDS, IDS, paramters, delta, t_min, t_mid);
+    }
+    if( t_min_adj_sum_sqs < sum_sq_opt ){
+        t_opt = linear_search( VGS , VDS, IDS, paramters, delta, t_min, t_mid);
+    }
+    if( t_max_adj_sum_sqs < sum_sq_opt ){
+        t_opt = linear_search( VGS , VDS, IDS, paramters, delta, t_mid, t_max);
+    }
+    return t_opt;
+}
+
+void quasiNetwon_itr( vector<double>* VGS , vector<double>* VDS, vector<double>* IDS, vector<double>* current_parameters,  vector<double>* new_parameters, double* norm_V, double* norm_delta){
 //    vector<double>* x = new vector<double>;
 //    (*x).push_back(k);(*x).push_back(Vth);(*x).push_back(Is);
-    double k = (*current_paramters)[0];
-    double Vth = (*current_paramters)[1];
-    double Is = (*current_paramters)[2];
-    cout << "kappa = " << k << " V_th = " << Vth << " I_ s = " << Is << " ";
+    double k = (*current_parameters)[0];
+    double Vth = (*current_parameters)[1];
+    double Is = (*current_parameters)[2];
+    cout << "kappa = " << k << " V_th = " << Vth << " I_s = " << Is << " ";
     
     vector<double>* Ids_current = new vector<double>;
     modelIds(Ids_current, VGS, VDS, k, Vth, Is);
@@ -85,16 +126,24 @@ void quasiNetwon_itr( vector<double>* VGS , vector<double>* VDS, vector<double>*
     *norm_V = current_sum_sqs;
     
     
-    vector<double>* delta_paramters = new vector<double>;
-    quasiNetwon_dx(VGS, VDS, IDS, k, Vth, Is, delta_paramters);
+    vector<double>* delta_parameters = new vector<double>;
+    quasiNetwon_dx(VGS, VDS, IDS, k, Vth, Is, delta_parameters);
     
-    double delta = delta_norm_2(delta_paramters, current_paramters);
-    cout << "||delta|| = " << delta << " ";
-    *norm_delta = delta;
     
-    add_vectors(current_paramters, delta_paramters, new_parameters);
     
-    printMatrix(new_parameters);
+    double t = linear_search(VGS, VDS, IDS, current_parameters, delta_parameters);
+    
+//    cout << "This is the current deltas: ";printMatrix(delta_parameters);
+//    cout << "This is the t scaling the deltas: " << t << endl;
+    vector<double>* t_delta_parameters = new vector<double> ;
+    scaleVector(t, delta_parameters, t_delta_parameters);
+    cout << "This is the scaled deltas: "; printMatrix(t_delta_parameters);
+    add_vectors(current_parameters, t_delta_parameters, new_parameters);
+//    cout << "This is the new parameters: "; printMatrix(new_parameters);
+    double delta_adj = delta_norm_2(t_delta_parameters, new_parameters);
+    cout << "||delta|| = " << delta_adj << " " << endl;
+    *norm_delta = delta_adj;
+//    printMatrix(new_parameters);
     
 }
 

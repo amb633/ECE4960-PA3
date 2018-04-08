@@ -140,3 +140,10 @@ double parameterSensitivity( vector<double>* parameters , double pertubation , i
     double den = kappa_new/kappa;
     return num/den;
 }
+
+void scaleVector( double scalar, vector<double>* a,  vector<double>* result){
+    for( int i = 0; i<(*a).size(); i++){
+        (*result).push_back((*a)[i]*scalar);
+    }
+}
+

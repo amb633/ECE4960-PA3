@@ -21,8 +21,8 @@ vector<double>* VGS = new vector<double>;
 vector<double>* VDS = new vector<double>;
 vector<double>* IDS = new vector<double>;
 
-//string path = "/Users/arianabruno/Desktop/ECE4960/ProgrammingAssignments/ECE4960-PA3/outputNMOS.txt";
-string path = "C:/Users/Haritha/Documents/ECE4960-PAs/ECE4960-PA3/outputNMOS.txt";
+string path = "/Users/arianabruno/Desktop/ECE4960/ProgrammingAssignments/ECE4960-PA3/outputNMOS.txt";
+//string path = "C:/Users/Haritha/Documents/ECE4960-PAs/ECE4960-PA3/outputNMOS.txt";
 
 
 int main(int argc, const char * argv[]) {
@@ -64,12 +64,14 @@ int main(int argc, const char * argv[]) {
     double norm_V, norm_delta;
     
     quasiNetwon_itr(VGS, VDS, IDS, current_parameters, updated_parameters, &norm_V, &norm_delta);
-    
-    if( norm_V > 1e-4){
-        (*current_parameters) = (*updated_parameters);
-        vector<double>* updated_parameters = new vector<double>;
-        quasiNetwon_itr(VGS, VDS, IDS, current_parameters, updated_parameters, &norm_V, &norm_delta);
+    (*current_parameters) = (*updated_parameters);
+    while( norm_V > 1e-9 && norm_delta > 1e-9){
+        
+        vector<double>* new_parameters = new vector<double>;
+        quasiNetwon_itr(VGS, VDS, IDS, current_parameters, new_parameters, &norm_V, &norm_delta);
+        (*current_parameters) = (*new_parameters);
     }
+
 
     cout << " --------------- SECANT CONVERGENCE --------------- " << endl;
     // two initial guesses
@@ -125,5 +127,6 @@ int main(int argc, const char * argv[]) {
     cout << " sensitivity with respect to is    = " << is_sensitivity << endl;
 
     cout << endl;
+
     return 0;
 }

@@ -16,3 +16,5 @@ void add_vectors( vector<double>* x,  vector<double>* dx,  vector<double>* sum )
 double delta_norm_2( vector<double>* delta_a, vector<double>* a );
 double parameterSensitivity( vector<double>* parameters , double pertubation , int which ,
     vector<double>* VGS , vector<double>* VDS , vector<double>* IDS );
+void scaleVector( double scalar, vector<double>* a,  vector<double>* result);
+

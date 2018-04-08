@@ -63,6 +63,7 @@ void conditionMatrix( vector<vector<double>*>* matrix ){
 	// iterate over each column
 	for ( int col = 0 ; col < rank ; col++ ){
 		//printMatrix(matrix);
+
 		double max = 0.0;
 		int max_row = col;
 
