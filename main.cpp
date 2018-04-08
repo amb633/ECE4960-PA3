@@ -21,8 +21,8 @@ vector<double>* VGS = new vector<double>;
 vector<double>* VDS = new vector<double>;
 vector<double>* IDS = new vector<double>;
 
-//string path = "/Users/arianabruno/Desktop/ECE4960/ProgrammingAssignments/ECE4960-PA3/outputNMOS.txt";
-string path = "C:/Users/Haritha/Documents/ECE4960-PAs/ECE4960-PA3/outputNMOS.txt";
+string path = "/Users/arianabruno/Desktop/ECE4960/ProgrammingAssignments/ECE4960-PA3/outputNMOS.txt";
+//string path = "C:/Users/Haritha/Documents/ECE4960-PAs/ECE4960-PA3/outputNMOS.txt";
 
 
 int main(int argc, const char * argv[]) {
@@ -52,7 +52,8 @@ int main(int argc, const char * argv[]) {
     cout << "m = " << (*solution)[0] << endl;
     cout << "c0 = " << exp((*solution)[1]) << endl; */
     
-    cout << endl << " -------- Quasi Newton Parameter Extraction -------- " << endl << endl;
+    cout << endl << " -------- Task 4A : Quasi Newton Parameter Extraction-------- " << endl << endl;
+    
     double k_0 = 1.0;
     double Vth_0 = 1.0;
     double Is_0 = 1e-7;
@@ -63,15 +64,17 @@ int main(int argc, const char * argv[]) {
     
     double norm_V, norm_delta_rel, norm_delta_abs;
     
-    quasiNetwon_itr(VGS, VDS, IDS, current_parameters, updated_parameters, &norm_V, &norm_delta_rel, &norm_delta_abs);
+    quasiNetwon_itr(VGS, VDS, IDS, current_parameters, updated_parameters, &norm_V, &norm_delta_rel, &norm_delta_abs, false);
     (*current_parameters) = (*updated_parameters);
+    
     int itr = 0;
     while( norm_V > 1e-9 && norm_delta_rel > 1e-9){
         vector<double>* new_parameters = new vector<double>;
-        quasiNetwon_itr(VGS, VDS, IDS, current_parameters, new_parameters, &norm_V, &norm_delta_rel, &norm_delta_abs);
+        quasiNetwon_itr(VGS, VDS, IDS, current_parameters, new_parameters, &norm_V, &norm_delta_rel, &norm_delta_abs, false);
         (*current_parameters) = (*new_parameters);
         itr++;
     }
+    
     cout << "the converged solutions after " << itr << " iterations are: " << endl;
     cout << "kappa = " << (*current_parameters)[0] << endl;
     cout << "V_th = " << (*current_parameters)[1] << endl;
@@ -80,9 +83,40 @@ int main(int argc, const char * argv[]) {
     cout << "relative residual error = " << norm_delta_rel << endl;
     cout << "least squares = " << norm_V << endl;
     cout << endl;
-
+    
+    cout << endl << " -------- Task 5A : Quasi Newton Parameter Extraction-------- " << endl << endl;
+    
+    cout << "for normalized soltions: " << endl << endl;
+    
+    vector<double>* current_parameters_N = new vector<double>;
+    (*current_parameters_N).push_back(k_0); (*current_parameters_N).push_back(Vth_0); (*current_parameters_N).push_back(Is_0);
+    vector<double>* updated_parameters_N = new vector<double>;
+    
+    double norm_V_N, norm_delta_rel_N, norm_delta_abs_N;
+    
+    quasiNetwon_itr(VGS, VDS, IDS, current_parameters_N, updated_parameters_N, &norm_V_N, &norm_delta_rel_N, &norm_delta_abs_N, true);
+    (*current_parameters_N) = (*updated_parameters_N);
+    
+    int itr_N = 0;
+    while( norm_V_N > 1e-9 && norm_delta_rel_N > 1e-9){
+        vector<double>* new_parameters_N = new vector<double>;
+        quasiNetwon_itr(VGS, VDS, IDS, current_parameters_N, new_parameters_N, &norm_V_N, &norm_delta_rel_N, &norm_delta_abs_N, true);
+        (*current_parameters_N) = (*new_parameters_N);
+        itr_N++;
+    }
+    
+    cout << "the converged solutions after " << itr_N << " iterations are: " << endl;
+    cout << "kappa = " << (*current_parameters_N)[0] << endl;
+    cout << "V_th = " << (*current_parameters_N)[1] << endl;
+    cout << "Is = " << (*current_parameters_N)[2] << endl;
+    cout << "absolute residual error = " << norm_delta_abs_N << endl;
+    cout << "relative residual error = " << norm_delta_rel_N << endl;
+    cout << "least squares = " << norm_V_N << endl;
+    cout << endl;
+    
 
     cout << endl << endl;
+    
     cout << " --------------- Task 4B : Secant Convergence --------------- " << endl;
     // two initial guesses
     // parameters in the following order: kappa , vth , is
