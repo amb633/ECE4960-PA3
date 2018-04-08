@@ -52,7 +52,7 @@ int main(int argc, const char * argv[]) {
     cout << "m = " << (*solution)[0] << endl;
     cout << "c0 = " << exp((*solution)[1]) << endl; */
     
-    cout << endl << "Quasi Newton Parameter Extraction" << endl << endl;
+    cout << endl << " -------- Quasi Newton Parameter Extraction -------- " << endl << endl;
     double k_0 = 1.0;
     double Vth_0 = 1.0;
     double Is_0 = 1e-7;
@@ -61,19 +61,27 @@ int main(int argc, const char * argv[]) {
     (*current_parameters).push_back(k_0); (*current_parameters).push_back(Vth_0); (*current_parameters).push_back(Is_0);
     vector<double>* updated_parameters = new vector<double>;
     
-    double norm_V, norm_delta;
+    double norm_V, norm_delta_rel, norm_delta_abs;
     
-    quasiNetwon_itr(VGS, VDS, IDS, current_parameters, updated_parameters, &norm_V, &norm_delta);
+    quasiNetwon_itr(VGS, VDS, IDS, current_parameters, updated_parameters, &norm_V, &norm_delta_rel, &norm_delta_abs);
     (*current_parameters) = (*updated_parameters);
-    while( norm_V > 1e-9 && norm_delta > 1e-9){
-        
+    int itr = 0;
+    while( norm_V > 1e-9 && norm_delta_rel > 1e-9){
         vector<double>* new_parameters = new vector<double>;
-        quasiNetwon_itr(VGS, VDS, IDS, current_parameters, new_parameters, &norm_V, &norm_delta);
+        quasiNetwon_itr(VGS, VDS, IDS, current_parameters, new_parameters, &norm_V, &norm_delta_rel, &norm_delta_abs);
         (*current_parameters) = (*new_parameters);
+        itr++;
     }
+    cout << "the converged solutions after " << itr << " iterations are: " << endl;
+    cout << "kappa = " << (*current_parameters)[0] << endl;
+    cout << "V_th = " << (*current_parameters)[1] << endl;
+    cout << "Is = " << (*current_parameters)[2] << endl;
+    cout << "absolute residual error = " << norm_delta_abs << endl;
+    cout << "relative residual error = " << norm_delta_rel << endl;
+    cout << "least squares = " << norm_V << endl;
+    cout << endl;
 
-
-    cout << " --------------- SECANT CONVERGENCE --------------- " << endl;
+    cout << " --------------- Secant Parameter Extraction --------------- " << endl;
     // two initial guesses
     // parameters in the following order: kappa , vth , is
     vector<double> guess_0 = { 1.25 , 1.1 , 2.5e-7 };

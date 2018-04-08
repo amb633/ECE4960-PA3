@@ -102,10 +102,18 @@ void add_vectors( vector<double>* x,  vector<double>* dx,  vector<double>* sum )
     }
 }
 
-double delta_norm_2( vector<double>* delta_a, vector<double>* a ){
+double delta_norm_rel( vector<double>* delta_a, vector<double>* a ){
     double norm = 0.0;
     for(int i = 0; i<(*a).size(); i++){
         norm = norm + (pow((*delta_a)[i], 2)/pow((*a)[i], 2));
+    }
+    return norm;
+}
+
+double delta_norm_abs( vector<double>* delta_a){
+    double norm = 0.0;
+    for(int i = 0; i<(*delta_a).size(); i++){
+        norm = norm + (pow((*delta_a)[i], 2));
     }
     return norm;
 }

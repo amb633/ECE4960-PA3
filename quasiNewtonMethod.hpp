@@ -17,5 +17,5 @@
 using namespace std;
 
 void quasiNetwon_dx(vector<double>* VGS , vector<double>* VDS, vector<double>* IDS, double k, double Vth, double Is, vector<double>* delta_x);
-void quasiNetwon_itr( vector<double>* VGS , vector<double>* VDS, vector<double>* IDS, vector<double>* current_paramters,  vector<double>* new_parameters, double* norm_V, double* norm_delta);
+void quasiNetwon_itr( vector<double>* VGS , vector<double>* VDS, vector<double>* IDS, vector<double>* current_paramters,  vector<double>* new_parameters, double* norm_V, double* norm_delta_rel,  double* norm_delta_abs);
 #endif /* quasiNewtonMethod_hpp */

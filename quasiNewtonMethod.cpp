@@ -110,26 +110,24 @@ double linear_search( vector<double>* VGS , vector<double>* VDS, vector<double>*
     return t_opt;
 }
 
-void quasiNetwon_itr( vector<double>* VGS , vector<double>* VDS, vector<double>* IDS, vector<double>* current_parameters,  vector<double>* new_parameters, double* norm_V, double* norm_delta){
+void quasiNetwon_itr( vector<double>* VGS , vector<double>* VDS, vector<double>* IDS, vector<double>* current_parameters,  vector<double>* new_parameters, double* norm_V, double* norm_delta_rel,  double* norm_delta_abs){
 //    vector<double>* x = new vector<double>;
 //    (*x).push_back(k);(*x).push_back(Vth);(*x).push_back(Is);
     double k = (*current_parameters)[0];
     double Vth = (*current_parameters)[1];
     double Is = (*current_parameters)[2];
-    cout << "kappa = " << k << " V_th = " << Vth << " I_s = " << Is << " ";
+//    cout << "kappa = " << k << " V_th = " << Vth << " I_s = " << Is << " ";
     
     vector<double>* Ids_current = new vector<double>;
     modelIds(Ids_current, VGS, VDS, k, Vth, Is);
     double current_sum_sqs = sumSquares(Ids_current, IDS);
     
-    cout << "||V|| = " << current_sum_sqs << " ";
+//    cout << "||V|| = " << current_sum_sqs << " ";
     *norm_V = current_sum_sqs;
     
     
     vector<double>* delta_parameters = new vector<double>;
     quasiNetwon_dx(VGS, VDS, IDS, k, Vth, Is, delta_parameters);
-    
-    
     
     double t = linear_search(VGS, VDS, IDS, current_parameters, delta_parameters);
     
@@ -137,13 +135,14 @@ void quasiNetwon_itr( vector<double>* VGS , vector<double>* VDS, vector<double>*
 //    cout << "This is the t scaling the deltas: " << t << endl;
     vector<double>* t_delta_parameters = new vector<double> ;
     scaleVector(t, delta_parameters, t_delta_parameters);
-    cout << "This is the scaled deltas: "; printMatrix(t_delta_parameters);
+//    cout << "This is the scaled deltas: "; printMatrix(t_delta_parameters);
     add_vectors(current_parameters, t_delta_parameters, new_parameters);
 //    cout << "This is the new parameters: "; printMatrix(new_parameters);
-    double delta_adj = delta_norm_2(t_delta_parameters, new_parameters);
-    cout << "||delta|| = " << delta_adj << " " << endl;
-    *norm_delta = delta_adj;
+    double delta_adj = delta_norm_rel(t_delta_parameters, new_parameters);
+//    cout << "||delta|| = " << delta_adj << " " << endl;
+    *norm_delta_rel = delta_adj;
 //    printMatrix(new_parameters);
+    *norm_delta_abs = delta_norm_abs(t_delta_parameters);
     
 }
 
