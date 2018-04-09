@@ -377,20 +377,100 @@ int main(int argc, const char * argv[]) {
         }
     }
 
+    cout << " --------------- Task 6C : Normalized Quasi Newton Convergence with Different Starting Points --------------- " << endl;
+      
+    current_parameters_itr.erase(current_parameters_itr.begin(),current_parameters_itr.end());
+    updated_parameters_itr.erase(updated_parameters_itr.begin(),updated_parameters_itr.end());
+
+    double min_least_squares_nQuasi = 10000.0;
+    double min_absolute_residual_nQuasi = 0.0;
+    double min_relative_residual_nQuasi = 0.0;
+    double min_kappa_nQuasi = 0.0;
+    double min_vth_nQuasi = 0.0;
+    double min_is_nQuasi = 0.0;
+    double min_kappa_initial_nQuasi = 0.0;
+    double min_vth_initial_nQuasi = 0.0;
+    double min_is_initial_nQuasi = 0.0;
+    double min_kappa_sensitivity_nQuasi = 0.0;
+    double min_vth_sensitivity_nQuasi = 0.0;
+    double min_is_sensitivity_nQuasi = 0.0;
+    
+    for ( int itk = 0 ; itk < kappa_initial_points.size() ; itk++ ){
+        for ( int itv = 0 ; itv < vth_initial_points.size() ; itv++ ){
+            for ( int its = 0 ; its < is_initial_points.size() ; its++ ){
+                k_0 = kappa_initial_points[itk];
+                Vth_0 = vth_initial_points[itv];
+                Is_0 = is_initial_points[its];
+                
+                vector<double> current_parameters_itr;
+                vector<double> updated_parameters_itr;
+                (current_parameters_itr).push_back(k_0); (current_parameters_itr).push_back(Vth_0);(current_parameters_itr).push_back(Is_0);
+                
+                double norm_V, norm_delta_rel, norm_delta_abs;
+                
+                quasiNetwon_itr(&VGS, &VDS, &IDS, &current_parameters_itr, &updated_parameters_itr, &norm_V, &norm_delta_rel, &norm_delta_abs, true);
+                (current_parameters_itr) = (updated_parameters_itr);
+                
+                int itr = 0;
+                while( norm_V > 1e-9 && norm_delta_rel > 1e-9 && itr < 100 ){
+                    vector<double> new_parameters_itr;
+                    quasiNetwon_itr(&VGS, &VDS, &IDS, &current_parameters_itr, &new_parameters_itr, &norm_V, &norm_delta_rel, &norm_delta_abs, true);
+                    (current_parameters_itr) = (new_parameters_itr);
+                    itr++;
+                    if( itr >= 100 ){
+                        cout << "did not converge" << endl;
+                    }
+                }
+                
+                cout << " the converged solutions after " << itr << " iterations are: " << endl;
+                cout << " kappa = " << (current_parameters_itr)[0] << endl;
+                cout << " V_th = " << (current_parameters_itr)[1] << endl;
+                cout << " Is = " << (current_parameters_itr)[2] << endl;
+                cout << " absolute residual error = " << norm_delta_abs << endl;
+                cout << " relative residual error = " << norm_delta_rel << endl;
+                cout << " least squares = " << norm_V << endl;
+                
+                double k_sensitivity = parameterSensitivity( &current_parameters_itr , 0.1 , 0 , &VGS , &VDS , &IDS );
+                double Vth_sensitivity = parameterSensitivity ( &current_parameters_itr , 0.1 , 1 , &VGS , &VDS , &IDS );
+                double Is_sensitivity = parameterSensitivity ( &current_parameters_itr , 0.1 , 2 , &VGS , &VDS , &IDS );
+                cout << " sensitivity with respect to kappa = " << k_sensitivity << endl;
+                cout << " sensitivity with respect to vth   = " << Vth_sensitivity << endl;
+                cout << " sensitivity with respect to is    = " << Is_sensitivity << endl;
+                
+                if ( norm_V < min_least_squares_nQuasi ){
+                	min_least_squares_nQuasi = norm_V;
+                	min_absolute_residual_nQuasi = norm_delta_abs;
+                	min_relative_residual_nQuasi = norm_delta_rel;
+                	min_kappa_nQuasi = (current_parameters_itr)[0];
+                	min_vth_nQuasi = (current_parameters_itr)[1];
+                	min_is_nQuasi = (current_parameters_itr)[2];
+                	min_kappa_initial_nQuasi = k_0;
+                	min_vth_initial_nQuasi = Vth_0;
+                	min_is_initial_nQuasi = Is_0;
+                	min_kappa_sensitivity_nQuasi = k_sensitivity;
+                	min_vth_sensitivity_nQuasi = Vth_sensitivity;
+                	min_is_sensitivity_nQuasi = Is_sensitivity;
+                }
+
+                cout << endl;
+                
+            }
+        }
+    }
     cout << " --------------- Task 6D : Normalized Secant Convergence with Different Starting Points --------------- " << endl;
     
-    double min_least_squares_Secant = 10000.0;
-    double min_absolute_residual_Secant = 0.0;
-    double min_relative_residual_Secant = 0.0;
-    double min_kappa_Secant = 0.0;
-    double min_vth_Secant = 0.0;
-    double min_is_Secant = 0.0;
-    double min_kappa_initial_Secant = 0.0;
-    double min_vth_initial_Secant = 0.0;
-    double min_is_initial_Secant = 0.0;
-    double min_kappa_sensitivity_Secant = 0.0;
-    double min_vth_sensitivity_Secant = 0.0;
-    double min_is_sensitivity_Secant = 0.0;
+    double min_least_squares_nSecant = 10000.0;
+    double min_absolute_residual_nSecant = 0.0;
+    double min_relative_residual_nSecant = 0.0;
+    double min_kappa_nSecant = 0.0;
+    double min_vth_nSecant = 0.0;
+    double min_is_nSecant = 0.0;
+    double min_kappa_initial_nSecant = 0.0;
+    double min_vth_initial_nSecant = 0.0;
+    double min_is_initial_nSecant = 0.0;
+    double min_kappa_sensitivity_nSecant = 0.0;
+    double min_vth_sensitivity_nSecant = 0.0;
+    double min_is_sensitivity_nSecant = 0.0;
 
     for ( int itk = 0 ; itk < kappa_initial_points.size() ; itk++ ){
         for ( int itv = 0 ; itv < vth_initial_points.size() ; itv++ ){
@@ -434,25 +514,75 @@ int main(int argc, const char * argv[]) {
                 cout << " sensitivity with respect to is    = " << is_sensitivity << endl;
                 cout << endl << endl;
 
-                if ( least_squares < min_least_squares_Secant ){
-                	min_least_squares_Secant = least_squares;
-                	min_absolute_residual_Secant = absolute_residual;
-                	min_relative_residual_Secant = relative_residual;
-                	min_kappa_Secant = parameter_solutions[0];
-                	min_vth_Secant = parameter_solutions[1];
-                	min_is_Secant = parameter_solutions[2];
-                	min_kappa_initial_Secant = kappa_initial_points[itk];
-                	min_vth_initial_Secant = vth_initial_points[itv];
-                	min_is_initial_Secant = is_initial_points[its];
-                	min_kappa_sensitivity_Secant = kappa_sensitivity;
-                	min_vth_sensitivity_Secant = vth_sensitivity;
-                	min_is_sensitivity_Secant = is_sensitivity;
+                if ( least_squares < min_least_squares_nSecant ){
+                	min_least_squares_nSecant = least_squares;
+                	min_absolute_residual_nSecant = absolute_residual;
+                	min_relative_residual_nSecant = relative_residual;
+                	min_kappa_nSecant = parameter_solutions[0];
+                	min_vth_nSecant = parameter_solutions[1];
+                	min_is_nSecant = parameter_solutions[2];
+                	min_kappa_initial_nSecant = kappa_initial_points[itk];
+                	min_vth_initial_nSecant = vth_initial_points[itv];
+                	min_is_initial_nSecant = is_initial_points[its];
+                	min_kappa_sensitivity_nSecant = kappa_sensitivity;
+                	min_vth_sensitivity_nSecant = vth_sensitivity;
+                	min_is_sensitivity_nSecant = is_sensitivity;
                 }
 
 
             }
         }
     }
+
+    cout << " --------------- Task 6 Summary : Minimum Convergence Values for Each Method --------------- " << endl;
+    
+    cout << " ------ Minimum Unnormalized Quasi Newton ------ " << endl;
+    cout << " Is  = " << min_is_uQuasi << endl;
+    cout << " K   = " << min_kappa_uQuasi << endl;
+    cout << " Vth = " << min_vth_uQuasi << endl;
+    cout << " least squares     = " << min_least_squares_uQuasi << endl;
+    cout << " absolute residual = " << min_absolute_residual_uQuasi << endl;
+    cout << " relative residual = " << min_relative_residual_uQuasi << endl;
+    cout << " Is sensitivity    = " << min_is_sensitivity_uQuasi << endl;
+    cout << " Vth sensitivity   = " << min_vth_sensitivity_uQuasi << endl;
+    cout << " K  sensitivity    = " << min_kappa_sensitivity_uQuasi << endl;
+    cout << endl << endl;
+
+    cout << " ------ Minimum Unnormalized Secant ------ " << endl;
+    cout << " Is  = " << min_is_uSecant << endl;
+    cout << " K   = " << min_kappa_uSecant << endl;
+    cout << " Vth = " << min_vth_uSecant << endl;
+    cout << " least squares     = " << min_least_squares_uSecant << endl;
+    cout << " absolute residual = " << min_absolute_residual_uSecant << endl;
+    cout << " relative residual = " << min_relative_residual_uSecant << endl;
+    cout << " Is sensitivity    = " << min_is_sensitivity_uSecant << endl;
+    cout << " Vth sensitivity   = " << min_vth_sensitivity_uSecant << endl;
+    cout << " K  sensitivity    = " << min_kappa_sensitivity_uSecant << endl;
+
+    cout << " ------ Minimum Normalized Quasi Newton ------ " << endl;
+    cout << " Is  = " << min_is_nQuasi << endl;
+    cout << " K   = " << min_kappa_nQuasi << endl;
+    cout << " Vth = " << min_vth_nQuasi << endl;
+    cout << " least squares     = " << min_least_squares_nQuasi << endl;
+    cout << " absolute residual = " << min_absolute_residual_nQuasi << endl;
+    cout << " relative residual = " << min_relative_residual_nQuasi << endl;
+    cout << " Is sensitivity    = " << min_is_sensitivity_nQuasi << endl;
+    cout << " Vth sensitivity   = " << min_vth_sensitivity_nQuasi << endl;
+    cout << " K  sensitivity    = " << min_kappa_sensitivity_nQuasi << endl;
+    cout << endl << endl;
+
+    cout << " ------ Minimum Normalized Secant ------ " << endl;
+    cout << " Is  = " << min_is_nSecant << endl;
+    cout << " K   = " << min_kappa_nSecant << endl;
+    cout << " Vth = " << min_vth_nSecant << endl;
+    cout << " least squares     = " << min_least_squares_nSecant << endl;
+    cout << " absolute residual = " << min_absolute_residual_nSecant << endl;
+    cout << " relative residual = " << min_relative_residual_nSecant << endl;
+    cout << " Is sensitivity    = " << min_is_sensitivity_nSecant << endl;
+    cout << " Vth sensitivity   = " << min_vth_sensitivity_nSecant << endl;
+    cout << " K  sensitivity    = " << min_kappa_sensitivity_nSecant << endl;
+
+
 
     cout << endl;
     return 0;
