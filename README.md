@@ -62,14 +62,23 @@ Graphs were generated using MATLAB. Please refer to the *report* document for th
 ***************************************************************************
 ### Part 4B - Unnormalized Secant Convergence
 ***************************************************************************
+**Overview:** Functions for parameter fitting using the Secant Convergence Method
+
+**Documentation**
+- `secantConvergence()` : parent function for calling the secant convergence iteration given sets of inital guesses for the parameters. pass in `false` (default) for calculating unnormalized convergence, and `true` for calculating normalized convergence
+- `recurrenceRelation()` : calculates third data point given two initial guesses using the recurrence relation
+- `secantGradient()` : calculates the partial-derivative gradients using the Secant method
+- `secantHession()` : calculates the partial-derivatibe hessians using the Secant method
 
 ***************************************************************************
 ### Part 5 - Normalized Quasi Newton and Secant Convergence
 ***************************************************************************
+**Overview:** All functions are identical to Parts 4A and 4B, with the exception that the functions will habe to be called with a boolean `true` argument to indicate that the normalized values have to be calculated. Ensures maximum code reuse. 
 
 ***************************************************************************
-### Part 6 - Various Initial Guess for all Four Convergence Schemes
+### Part 6 - Various Initial Guesses for all Four Convergence Schemes
 ***************************************************************************
+**Overview:** All functions are identical to Parts 4A and 4B. Initial gueses are passed in through three nested loops to test every combination possible. The loops are repeated four times for each of the following: unnormalized Quasi-Newton, unnormalized Secant , normalized Quasi-Newton and normalized Secant.
 
 ***************************************************************************
 ### Part 7 - Vizualization of Converged Datasets
