@@ -13,8 +13,8 @@
 #include <cstdlib>
 #include "fullSolver.hpp"
 #include "generateSample.hpp"
-#include "utilityFunctions.hpp"
-//#include "quasiNewtonMethod.hpp"
+//#include "utilityFunctions.hpp"
+#include "quasiNewtonMethod.hpp"
 //#include "secant.hpp"
 
 vector<double> VGS;
@@ -67,25 +67,25 @@ int main(int argc, const char * argv[]) {
     quasiNetwon_itr(&VGS, &VDS, &IDS, &current_parameters, &updated_parameters, &norm_V, &norm_delta_rel, &norm_delta_abs, false);
     (current_parameters) = (updated_parameters);
     
-    /*int itr = 0;
+    int itr = 0;
     while( norm_V > 1e-9 && norm_delta_rel > 1e-9){
-        vector<double>* new_parameters = new vector<double>;
-        quasiNetwon_itr(VGS, VDS, IDS, current_parameters, new_parameters, &norm_V, &norm_delta_rel, &norm_delta_abs, false);
-        (*current_parameters) = (*new_parameters);
+        vector<double> new_parameters;
+        quasiNetwon_itr(&VGS, &VDS, &IDS, &current_parameters, &new_parameters, &norm_V, &norm_delta_rel, &norm_delta_abs, false);
+        (current_parameters) = (new_parameters);
         itr++;
     }
     
     cout << " the converged solutions after " << itr << " iterations are: " << endl;
-    cout << " kappa = " << (*current_parameters)[0] << endl;
-    cout << " V_th = " << (*current_parameters)[1] << endl;
-    cout << " Is = " << (*current_parameters)[2] << endl;
+    cout << " kappa = " << (current_parameters)[0] << endl;
+    cout << " V_th = " << (current_parameters)[1] << endl;
+    cout << " Is = " << (current_parameters)[2] << endl;
     cout << " absolute residual error = " << norm_delta_abs << endl;
     cout << " relative residual error = " << norm_delta_rel << endl;
     cout << " least squares = " << norm_V << endl;
     
-    double k_sensitivity = parameterSensitivity( current_parameters , 0.1 , 0 , VGS , VDS , IDS );
-    double Vth_sensitivity = parameterSensitivity ( current_parameters , 0.1 , 1 , VGS , VDS , IDS );
-    double Is_sensitivity = parameterSensitivity ( current_parameters , 0.1 , 2 , VGS , VDS , IDS );
+    double k_sensitivity = parameterSensitivity( &current_parameters , 0.1, 0 , &VGS, &VDS, &IDS );
+    double Vth_sensitivity = parameterSensitivity ( &current_parameters , 0.1 , 1 , &VGS , &VDS , &IDS );
+    double Is_sensitivity = parameterSensitivity ( &current_parameters , 0.1 , 2 , &VGS , &VDS , &IDS );
     cout << " sensitivity with respect to kappa = " << k_sensitivity << endl;
     cout << " sensitivity with respect to vth   = " << Vth_sensitivity << endl;
     cout << " sensitivity with respect to is    = " << Is_sensitivity << endl;
@@ -96,34 +96,34 @@ int main(int argc, const char * argv[]) {
     
     cout << " for normalized soltions: " << endl << endl;
     
-    vector<double>* current_parameters_N = new vector<double>;
-    (*current_parameters_N).push_back(k_0); (*current_parameters_N).push_back(Vth_0); (*current_parameters_N).push_back(Is_0);
-    vector<double>* updated_parameters_N = new vector<double>;
+    vector<double> current_parameters_N;
+    (current_parameters_N).push_back(k_0); (current_parameters_N).push_back(Vth_0); (current_parameters_N).push_back(Is_0);
+    vector<double> updated_parameters_N;
     
     double norm_V_N, norm_delta_rel_N, norm_delta_abs_N;
     
-    quasiNetwon_itr(VGS, VDS, IDS, current_parameters_N, updated_parameters_N, &norm_V_N, &norm_delta_rel_N, &norm_delta_abs_N, true);
-    (*current_parameters_N) = (*updated_parameters_N);
+    quasiNetwon_itr(&VGS, &VDS, &IDS, &current_parameters_N, &updated_parameters_N, &norm_V_N, &norm_delta_rel_N, &norm_delta_abs_N, true);
+    (current_parameters_N) = (updated_parameters_N);
     
     int itr_N = 0;
     while( norm_V_N > 1e-9 && norm_delta_rel_N > 1e-9){
-        vector<double>* new_parameters_N = new vector<double>;
-        quasiNetwon_itr(VGS, VDS, IDS, current_parameters_N, new_parameters_N, &norm_V_N, &norm_delta_rel_N, &norm_delta_abs_N, true);
-        (*current_parameters_N) = (*new_parameters_N);
+        vector<double> new_parameters_N;
+        quasiNetwon_itr(&VGS, &VDS, &IDS, &current_parameters_N, &new_parameters_N, &norm_V_N, &norm_delta_rel_N, &norm_delta_abs_N, true);
+        (current_parameters_N) = (new_parameters_N);
         itr_N++;
     }
     
     cout << " the converged solutions after " << itr_N << " iterations are: " << endl;
-    cout << " kappa = " << (*current_parameters_N)[0] << endl;
-    cout << " V_th = " << (*current_parameters_N)[1] << endl;
-    cout << " Is = " << (*current_parameters_N)[2] << endl;
+    cout << " kappa = " << (current_parameters_N)[0] << endl;
+    cout << " V_th = " << (current_parameters_N)[1] << endl;
+    cout << " Is = " << (current_parameters_N)[2] << endl;
     cout << " absolute residual error = " << norm_delta_abs_N << endl;
     cout << " relative residual error = " << norm_delta_rel_N << endl;
     cout << " least squares = " << norm_V_N << endl;
     cout << endl;
-    double k_sensitivity_N = parameterSensitivity( current_parameters_N , 0.1 , 0 , VGS , VDS , IDS );
-    double Vth_sensitivity_N = parameterSensitivity ( current_parameters_N , 0.1 , 1 , VGS , VDS , IDS );
-    double Is_sensitivity_N = parameterSensitivity ( current_parameters_N , 0.1 , 2 , VGS , VDS , IDS );
+    double k_sensitivity_N = parameterSensitivity( &current_parameters_N , 0.1 , 0 , &VGS , &VDS , &IDS );
+    double Vth_sensitivity_N = parameterSensitivity ( &current_parameters_N , 0.1 , 1 , &VGS , &VDS , &IDS );
+    double Is_sensitivity_N = parameterSensitivity ( &current_parameters_N , 0.1 , 2 , &VGS , &VDS , &IDS );
     cout << " sensitivity with respect to kappa = " << k_sensitivity_N << endl;
     cout << " sensitivity with respect to vth   = " << Vth_sensitivity_N << endl;
     cout << " sensitivity with respect to is    = " << Is_sensitivity_N << endl;
@@ -131,7 +131,7 @@ int main(int argc, const char * argv[]) {
 
     cout << endl << endl;
     
-    cout << " --------------- Task 4B : Secant Convergence --------------- " << endl;
+    /*cout << " --------------- Task 4B : Secant Convergence --------------- " << endl;
     // two initial guesses
     // parameters in the following order: kappa , vth , is
     vector<double> guess_0 = { 1.25 , 1.1 , 2.5e-7 };
@@ -216,57 +216,60 @@ int main(int argc, const char * argv[]) {
 
     cout << endl << endl;
     cout << " --------------- Task 6A : Unnormalized Quasi Newton Convergence with Different Starting Points --------------- " << endl;
-    
+    */
     vector<double> kappa_initial_points = { 0.5 , 0.6 , 0.7 , 0.8 , 0.9 , 1.0 };
     vector<double> vth_initial_points = { 0.8 , 0.9 , 1.0 , 1.1 , 1.2 , 1.3 , 1.4 , 1.5 , 1.6 , 1.7 , 1.8 , 1.9 , 2.0 };
     vector<double> is_initial_points = { 1e-8 , 3e-8 , 1e-7 , 3e-7 , 1e-6 , 3e-6 , 1e-5 , 3e-5 };
-
+     
     cout << " --------------- Task 6B : Unnormalized Secant Convergence with Different Starting Points --------------- " << endl;
-    vector<double>* least_squares_uSecant = new vector<double>;
-    vector<double>* kappa_uSecant = new vector<double>;
-    vector<double>* vth_uSecant = new vector<double>;
-    vector<double>* is_uSecant = new vector<double>;
-    vector<double>* absolute_residual_uSecant = new vector<double>;
-    vector<double>* relative_residual_uSecant = new vector<double>;
+//    vector<double>* least_squares_uSecant = new vector<double>;
+//    vector<double>* kappa_uSecant = new vector<double>;
+//    vector<double>* vth_uSecant = new vector<double>;
+//    vector<double>* is_uSecant = new vector<double>;
+//    vector<double>* absolute_residual_uSecant = new vector<double>;
+//    vector<double>* relative_residual_uSecant = new vector<double>;
     
-    vector<double>* current_parameters_itr = new vector<double>;
-    vector<double>* updated_parameters_itr = new vector<double>;
+    vector<double> current_parameters_itr;
+    vector<double> updated_parameters_itr;
     
     for ( int itk = 0 ; itk < kappa_initial_points.size() ; itk++ ){
         for ( int itv = 0 ; itv < vth_initial_points.size() ; itv++ ){
             for ( int its = 0 ; its < is_initial_points.size() ; its++ ){
-                double k_0 = kappa_initial_points[itk];
-                double Vth_0 = vth_initial_points[itv];
-                double Is_0 = is_initial_points[its];
+                k_0 = kappa_initial_points[itk];
+                Vth_0 = vth_initial_points[itv];
+                Is_0 = is_initial_points[its];
                 
-                current_parameters_itr->erase(current_parameters_itr->begin(),current_parameters_itr->end());
-                (*current_parameters_itr).push_back(k_0); (*current_parameters_itr).push_back(Vth_0); (*current_parameters_itr).push_back(Is_0);
-                updated_parameters_itr->erase(updated_parameters_itr->begin(), updated_parameters_itr->end());
+                vector<double> current_parameters_itr;
+                vector<double> updated_parameters_itr;
+                (current_parameters_itr).push_back(k_0); (current_parameters_itr).push_back(Vth_0);(current_parameters_itr).push_back(Is_0);
                 
                 double norm_V, norm_delta_rel, norm_delta_abs;
                 
-                quasiNetwon_itr(VGS, VDS, IDS, current_parameters_itr, updated_parameters_itr, &norm_V, &norm_delta_rel, &norm_delta_abs, false);
-                (*current_parameters_itr) = (*updated_parameters_itr);
+                quasiNetwon_itr(&VGS, &VDS, &IDS, &current_parameters_itr, &updated_parameters_itr, &norm_V, &norm_delta_rel, &norm_delta_abs, false);
+                (current_parameters_itr) = (updated_parameters_itr);
                 
                 int itr = 0;
-                while( norm_V > 1e-9 && norm_delta_rel > 1e-9){
-                    vector<double>* new_parameters = new vector<double>;
-                    quasiNetwon_itr(VGS, VDS, IDS, current_parameters, new_parameters, &norm_V, &norm_delta_rel, &norm_delta_abs, false);
-                    (*current_parameters) = (*new_parameters);
+                while( norm_V > 1e-9 && norm_delta_rel > 1e-9 && itr < 100 ){
+                    vector<double> new_parameters_itr;
+                    quasiNetwon_itr(&VGS, &VDS, &IDS, &current_parameters_itr, &new_parameters_itr, &norm_V, &norm_delta_rel, &norm_delta_abs, false);
+                    (current_parameters_itr) = (new_parameters_itr);
                     itr++;
+                    if( itr >= 100 ){
+                        cout << "did not converge" << endl;
+                    }
                 }
                 
                 cout << " the converged solutions after " << itr << " iterations are: " << endl;
-                cout << " kappa = " << (*current_parameters)[0] << endl;
-                cout << " V_th = " << (*current_parameters)[1] << endl;
-                cout << " Is = " << (*current_parameters)[2] << endl;
+                cout << " kappa = " << (current_parameters_itr)[0] << endl;
+                cout << " V_th = " << (current_parameters_itr)[1] << endl;
+                cout << " Is = " << (current_parameters_itr)[2] << endl;
                 cout << " absolute residual error = " << norm_delta_abs << endl;
                 cout << " relative residual error = " << norm_delta_rel << endl;
                 cout << " least squares = " << norm_V << endl;
                 
-                double k_sensitivity = parameterSensitivity( current_parameters , 0.1 , 0 , VGS , VDS , IDS );
-                double Vth_sensitivity = parameterSensitivity ( current_parameters , 0.1 , 1 , VGS , VDS , IDS );
-                double Is_sensitivity = parameterSensitivity ( current_parameters , 0.1 , 2 , VGS , VDS , IDS );
+                double k_sensitivity = parameterSensitivity( &current_parameters_itr , 0.1 , 0 , &VGS , &VDS , &IDS );
+                double Vth_sensitivity = parameterSensitivity ( &current_parameters_itr , 0.1 , 1 , &VGS , &VDS , &IDS );
+                double Is_sensitivity = parameterSensitivity ( &current_parameters_itr , 0.1 , 2 , &VGS , &VDS , &IDS );
                 cout << " sensitivity with respect to kappa = " << k_sensitivity << endl;
                 cout << " sensitivity with respect to vth   = " << Vth_sensitivity << endl;
                 cout << " sensitivity with respect to is    = " << Is_sensitivity << endl;
@@ -277,7 +280,7 @@ int main(int argc, const char * argv[]) {
         }
     }
     
-    
+    /*
     for ( int itk = 0 ; itk < kappa_initial_points.size() ; itk++ ){
         for ( int itv = 0 ; itv < vth_initial_points.size() ; itv++ ){
             for ( int its = 0 ; its < is_initial_points.size() ; its++ ){

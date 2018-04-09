@@ -128,14 +128,14 @@ double delta_norm_abs( vector<double>* delta_a){
 
 double parameterSensitivity( vector<double>* parameters , double pertubation , int which ,
     vector<double>* VGS , vector<double>* VDS , vector<double>* IDS ){
-    vector<double>* IDS_model = new vector<double>;
+    vector<double> IDS_model;
     
     double kappa = (*parameters)[0];
     double vth = (*parameters)[1];
     double is = (*parameters)[2];
 
-    modelIds( IDS_model , VGS , VDS , kappa , vth , is );
-    double v = sumSquares( IDS_model , IDS ); 
+    modelIds( &IDS_model , VGS , VDS , kappa , vth , is );
+    double v = sumSquares( &IDS_model , IDS );
 
     double kappa_new = kappa;
     double vth_new = vth;
@@ -148,9 +148,9 @@ double parameterSensitivity( vector<double>* parameters , double pertubation , i
         default: cout << "no valid parameter chosen for sensitivity analysis" << endl; return 0.0;
     }
 
-    (*IDS_model).erase((*IDS_model).begin(), (*IDS_model).end() );
-    modelIds( IDS_model , VGS , VDS , kappa_new , vth_new , is_new );
-    double v_new = sumSquares( IDS_model , IDS ); 
+    IDS_model.erase((IDS_model).begin(), (IDS_model).end());
+    modelIds( &IDS_model , VGS , VDS , kappa_new , vth_new , is_new );
+    double v_new = sumSquares( &IDS_model , IDS ); 
 
     double num = v_new/v;
     double den = kappa_new/kappa;
