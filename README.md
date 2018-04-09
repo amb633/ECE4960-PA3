@@ -57,7 +57,7 @@ The following functions are defined in the full solver files.  All input argumen
 ***************************************************************************
 ### Part 3 - Visualization of Data
 ***************************************************************************
-Graphs were generated using MATLAB. Please refer to the * ReportAndAnalysis.pdf * for the graphs under section "Task 3".
+Graphs were generated using MATLAB. Please refer to the **ReportAndAnalysis.pdf** for the graphs under section "Task 3".
 
 ***************************************************************************
 ### Part 4A - Unnormalized Quasi Newton Convergence
@@ -93,4 +93,4 @@ Graphs were generated using MATLAB. Please refer to the * ReportAndAnalysis.pdf 
 ***************************************************************************
 ### Part 7 - Vizualization of Converged Datasets
 ***************************************************************************
-Graphs were generated using MATLAB. Please refer to the * ReportAndAnalysis.pdf * document for the graphs and analysis under "Task 7"
+Graphs were generated using MATLAB. Please refer to the **ReportAndAnalysis.pdf** document for the graphs and analysis under "Task 7"
