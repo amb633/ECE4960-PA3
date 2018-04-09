@@ -6,8 +6,7 @@ void fullSolver( vector<double>* solution , vector<vector<double>>* matrix , vec
 	int rank = (*matrix).size();
 	
 	// condition the matrix through partial row pivoting
-	conditionMatrix( matrix );
-    vector<vector<double>> matrix_show = (*matrix);
+	conditionMatrix( matrix , b );
 	//printMatrix( matrix );
 
 	// create a dummy copy of matrix
@@ -56,7 +55,7 @@ void fullSolver( vector<double>* solution , vector<vector<double>>* matrix , vec
 	return;
 }
 
-void conditionMatrix( vector<vector<double>>* matrix ){
+void conditionMatrix( vector<vector<double>>* matrix , vector<double>* b ){
 // function to condition matrix through partial row pivoting
 	// assume square matrix
 	int rank = (*matrix).size();
@@ -80,6 +79,9 @@ void conditionMatrix( vector<vector<double>>* matrix ){
 		vector<double> temp = ((*matrix)[col]);
 		((*matrix)[col]) = ((*matrix)[max_row]);
 		((*matrix)[max_row]) = temp;
+		double t = (*b)[col];
+		(*b)[col] = (*b)[max_row];
+		(*b)[max_row] = t;
 	}
 //    return 0;
 }

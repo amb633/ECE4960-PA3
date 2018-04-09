@@ -3,18 +3,27 @@
 void recurrenceRelation( vector<double>* guess_2 , vector<double>* guess_1 , vector<double>* guess_0 ,
    vector<double>* VGS , vector<double>* VDS , vector<double>* IDS , bool normalize ){
    
+   // function to calculate the third data point given the first two
+
    vector<double> IDS_model;
+
+   // function_value for first data point
    modelIds( &IDS_model , VGS , VDS , (*guess_1)[0] , (*guess_1)[1] , (*guess_1)[2]);
    double v_1 = sumSquares( &IDS_model , IDS , normalize );
    
-   IDS_model.erase( IDS_model.begin(), IDS_model.end()); 
+   // erase vector for reuse to save memory
+   IDS_model.erase( IDS_model.begin(), IDS_model.end());
+
+   // function value for second data point 
    modelIds( &IDS_model , VGS , VDS , (*guess_0)[0] , (*guess_0)[1] , (*guess_0)[2]);
    double v_0 = sumSquares( &IDS_model , IDS , normalize );
    
+   // find the third data point via recursion
    double kappa_2 = (((*guess_0)[0])*v_1 - ((*guess_1)[0])*v_0) / (v_1 - v_0);
    double vth_2 = (((*guess_0)[1])*v_1 - ((*guess_1)[1])*v_0) / (v_1 - v_0);
    double is_2 = (((*guess_0)[2])*v_1 - ((*guess_1)[2])*v_0) / (v_1 - v_0);
    
+   // pass values back to caller
    (*guess_2).push_back(kappa_2);
    (*guess_2).push_back(vth_2);
    (*guess_2).push_back(is_2);
@@ -118,14 +127,16 @@ void secantConvergence( int& iterations , vector<double>* parameter_solutions ,
        vector<vector<double>> hessians;
        vector<double> delta;
 
+       // find the gradients and hessians
        secantGradient( &gradients , &kappa_history , &vth_history , &is_history , &v_history );
        secantHessian( &hessians , &kappa_history , &vth_history , &is_history , &v_history ); 
        
+       // call the solver to find the update values
        fullSolver( &delta , &hessians , &gradients );
-         
+      
+       // calculate the residuals
        // covergence criteria taken to be the relative residual
        absolute_residual = (delta[0])*(delta[0]) + (delta[1])*(delta[1]) + (delta[2])*(delta[2]);
-
        relative_residual = ((delta[0])*(delta[0]))/(kappa*kappa) + ((delta[1])*(delta[1]))/(vth*vth) + ((delta[2])*(delta[2]))/(is*is);
 
        // update variables for next iteration 
@@ -134,9 +145,14 @@ void secantConvergence( int& iterations , vector<double>* parameter_solutions ,
        is -= delta[2];
 
        //cout << counter << " : " << v << " : " << absolute_residual << endl;
+       // update the counter
        counter++;
-       if ( counter > 15000 || vth > 15 ) break;
+       // if convergence the is taking too long, or if values are growing to unreasonable values
+       // break out of the loop as this is not the correct answer anyway
+       if ( counter > 5000 || vth > 15 ) break;
    }
+
+   // update parameters and return to caller
    iterations = counter;
    modelIds( &IDS_model , VGS , VDS , kappa , vth , is );
    least_squares = sumSquares( &IDS_model , IDS , normalize );
@@ -168,6 +184,7 @@ void secantGradient( vector<double>* gradients, vector<double>* kappa_history , 
    double gradientVth = ( v_0 - v_1 )/( vth_0 - vth_1 );
    double gradientIs = ( v_0 - v_1 )/( is_0 - is_1 );
 
+   // return values to the caller
    (*gradients).push_back(gradientKappa);
    (*gradients).push_back(gradientVth);
    (*gradients).push_back(gradientIs);
@@ -175,7 +192,9 @@ void secantGradient( vector<double>* gradients, vector<double>* kappa_history , 
 };
 
 void secantHessian( vector<vector<double>>* hessians , vector<double>* kappa_history , vector<double>* vth_history , vector<double>* is_history , vector<double>* v_history ) {
+   // variable_history is a vector of the form : variable(k-2) , variable(k-1) , variable(k)
 
+   // extract all the current and previous values
    double kappa_0 = (*kappa_history)[2];
    double kappa_1 = (*kappa_history)[1]; 
    double kappa_2 = (*kappa_history)[0];
@@ -194,13 +213,15 @@ void secantHessian( vector<vector<double>>* hessians , vector<double>* kappa_his
 
    double num = (v_0 - 2.0*v_1 + v_2);
 
+   // calculate the gradients
    double h_kappa = num/((kappa_0 - kappa_1)*(kappa_1 - kappa_2));
    double h_vth = num/((vth_0 - vth_1)*(vth_1 - vth_2));
    double h_is = num/((is_0 - is_1)*(is_1 - is_2));
    zeroMatrix( hessians , 3 );
-   ((*hessians)[0])[0] = h_kappa;
-   ((*hessians)[1])[1] = h_vth;
-   ((*hessians)[2])[2] = h_is;
+   // return to the caller
+   (*hessians)[0][0] = h_kappa;
+   (*hessians)[1][1] = h_vth;
+   (*hessians)[2][2] = h_is;
 
    return;
 }

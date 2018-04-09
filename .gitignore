@@ -1,4 +1,4 @@
 *.exe
-*.txt
+outputNMOS.txt
 .DS_Store
 main

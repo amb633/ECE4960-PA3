@@ -18,7 +18,7 @@
 using namespace std;
 
 void fullSolver( vector<double>* solution , vector<vector<double>>* matrix , vector<double>* b );
-void conditionMatrix( vector<vector<double>>* matrix );
+void conditionMatrix( vector<vector<double>>* matrix , vector<double>* b );
 void printMatrix ( vector<vector<double>>* matrix );
 void printMatrix( vector<double>* vector );
 void identityMatrix( vector<vector<double>>* m , int rank );

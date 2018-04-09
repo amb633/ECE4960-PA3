@@ -67,39 +67,6 @@ void modelIds( vector<double>* IDS_model , vector<double>* VGS , vector<double>*
     return;
 }
 
-void searchValues( vector<double>* s_measured , vector<double>* VGS , vector<double>* VDS , vector<double>* IDS , double vgs , double vds ){
-    // ensure search values are in acceptable region
-    if ( vgs < 0.5 || vgs > 5 ) {
-        cout << "error in vgs search parameters" << endl;
-        return;
-    }
-    if ( vds < 0 || vds > 5 ){
-        cout << "error in vds search parameters" << endl;
-        return;
-    }
-
-    // find which region of VGS
-    int start = 0;
-    while ( (*VGS)[start] < vgs ){
-        start++;
-    }
-    int end = 0;
-    while ( (*VGS)[end] <= vgs ){
-        end++;
-    }
-    // then search smaller region for vds
-    int entry;
-    for ( entry = start ; entry < end ; entry ++ ){
-        if ( (*VDS)[entry] == vds ) break;
-    }
-    // then retrieve the corresponding ids
-    double ids = (*IDS)[entry];
-    (*s_measured).push_back(vgs);
-    (*s_measured).push_back(vds);
-    (*s_measured).push_back(ids);
-    return;
-}
-
 void add_vectors( vector<double>* x,  vector<double>* dx,  vector<double>* sum ){
     if((*x).size() != (*dx).size()){
         cout << "vectors have different dimensions... cannot add them togther! " << endl;

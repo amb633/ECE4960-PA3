@@ -17,6 +17,7 @@
 #include "quasiNewtonMethod.hpp"
 #include "secant.hpp"
 
+// global variables for storing the data points
 vector<double> VGS;
 vector<double> VDS;
 vector<double> IDS;
@@ -158,6 +159,9 @@ int main(int argc, const char * argv[]) {
     //* guess_1 -> next guess
     //* guess_2 -> third data point from the recurrence relation
     //* VGS, VDS, IDS -> data from the file
+    //* bool to indicate if the least squares calculation should be normalized or not 
+    //* false ( unnormalized ) is default
+    //* true is normarlized
     
     secantConvergence( iterations , &parameter_solutions ,
         absolute_residual , relative_residual , least_squares ,
