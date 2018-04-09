@@ -21,8 +21,8 @@ vector<double> VGS;
 vector<double> VDS;
 vector<double> IDS;
 
-//string path = "/Users/arianabruno/Desktop/ECE4960/ProgrammingAssignments/ECE4960-PA3/outputNMOS.txt";
-string path = "C:/Users/Haritha/Documents/ECE4960-PAs/ECE4960-PA3/outputNMOS.txt";
+string path = "/Users/arianabruno/Desktop/ECE4960/ProgrammingAssignments/ECE4960-PA3/outputNMOS.txt";
+//string path = "C:/Users/Haritha/Documents/ECE4960-PAs/ECE4960-PA3/outputNMOS.txt";
 
 
 int main(int argc, const char * argv[]) {
@@ -40,11 +40,11 @@ int main(int argc, const char * argv[]) {
     vector<vector<double>> H_matrix;
     vector<double> RHS;
     
-//    find the H matrix and RHS vector for this problem for parameter extraction of  m and c0 for the S_measured data
+    // find the H matrix and RHS vector for this problem for parameter extraction of  m and c0 for the S_measured data
     LinearLSF(&x_samples, &y_noisey_samples, &H_matrix, &RHS);
     vector<double> solution;
 
-//    solve for the parameters given H and RHS
+    // solve for the parameters given H and RHS
     fullSolver( &solution , &H_matrix , &RHS );
     
     cout << " This is the solution for m and log(c0)" << endl;
@@ -53,20 +53,22 @@ int main(int argc, const char * argv[]) {
     cout << " c0 = " << exp((solution)[1]) << endl;
     
     cout << endl << " -------- Task 4A : Quasi Newton Parameter Extraction-------- " << endl << endl;
-    
+    // declare vectors to hold the new and current parameters
     double k_0 = 1.0;
     double Vth_0 = 1.0;
     double Is_0 = 1e-7;
-    
     vector<double> current_parameters;
     (current_parameters).push_back(k_0); (current_parameters).push_back(Vth_0); (current_parameters).push_back(Is_0);
     vector<double> updated_parameters;
     
+    // variables to hold norm results for Least Squares and parameter relative and absolute residual error
     double norm_V, norm_delta_rel, norm_delta_abs;
     
+    //calculate the updated parameters after the initial guess
     quasiNetwon_itr(&VGS, &VDS, &IDS, &current_parameters, &updated_parameters, &norm_V, &norm_delta_rel, &norm_delta_abs, false);
     (current_parameters) = (updated_parameters);
     
+    //continue running quasi newton parameter extraction until the least squares or the parameter residual error converge
     int itr = 0;
     while( norm_V > 1e-9 && norm_delta_rel > 1e-9){
         vector<double> new_parameters;
@@ -75,6 +77,7 @@ int main(int argc, const char * argv[]) {
         itr++;
     }
     
+    //reporting out the final converged results
     cout << " the converged solutions after " << itr << " iterations are: " << endl;
     cout << " kappa = " << (current_parameters)[0] << endl;
     cout << " V_th = " << (current_parameters)[1] << endl;
@@ -82,19 +85,18 @@ int main(int argc, const char * argv[]) {
     cout << " absolute residual error = " << norm_delta_abs << endl;
     cout << " relative residual error = " << norm_delta_rel << endl;
     cout << " least squares = " << norm_V << endl;
-    
     double k_sensitivity = parameterSensitivity( &current_parameters , 0.1, 0 , &VGS, &VDS, &IDS );
     double Vth_sensitivity = parameterSensitivity ( &current_parameters , 0.1 , 1 , &VGS , &VDS , &IDS );
     double Is_sensitivity = parameterSensitivity ( &current_parameters , 0.1 , 2 , &VGS , &VDS , &IDS );
     cout << " sensitivity with respect to kappa = " << k_sensitivity << endl;
     cout << " sensitivity with respect to vth   = " << Vth_sensitivity << endl;
     cout << " sensitivity with respect to is    = " << Is_sensitivity << endl;
-    
     cout << endl;
     
     cout << endl << " -------- Task 5A : Normalized Quasi Newton Parameter Extraction-------- " << endl << endl;
-    
-    cout << " for normalized soltions: " << endl << endl;
+    //same as the above method
+    //only difference is the quasiNewton_itr function takes a "true" bool which specifies
+    //using the normalized sum_sq function were S = Ids_model/Ids_measured
     
     vector<double> current_parameters_N;
     (current_parameters_N).push_back(k_0); (current_parameters_N).push_back(Vth_0); (current_parameters_N).push_back(Is_0);
@@ -371,8 +373,6 @@ int main(int argc, const char * argv[]) {
                 	min_vth_sensitivity_uSecant = vth_sensitivity;
                 	min_is_sensitivity_uSecant = is_sensitivity;
                 }
-
-
             }
         }
     }

@@ -76,23 +76,28 @@ void quasiNetwon_dx(vector<double>* VGS , vector<double>* VDS, vector<double>* I
 }
 
 double t_adjusted_sum_sq( vector<double>* VGS, vector<double>* VDS, vector<double>* IDS, double t, vector<double>* delta, vector<double>* paramters, bool normalized){
-    
     //calculating the least squares results for the scaled delta_paramters by t
+    
+    //scale the delta for given t value
     vector<double> delta_adjusted;
     scaleVector(t, delta, &delta_adjusted);
     
     vector<double> Ids_t_adjusted;
     vector<double> new_adjusted_paramters;
     
+    //add new scaled delta to the new paramters
     add_vectors(paramters, &delta_adjusted, &new_adjusted_paramters);
+    
+    //calculate the Ids for the new parameters using the scaled delta
     modelIds(&Ids_t_adjusted, VGS, VDS, (new_adjusted_paramters)[0], (new_adjusted_paramters)[1], (new_adjusted_paramters)[2]);
     
+    //return sum_sq results for the new parameters using the scaled delta
     return sumSquares(&Ids_t_adjusted, IDS, normalized);
 }
 
 double linear_search( vector<double>* VGS , vector<double>* VDS, vector<double>* IDS, vector<double>* paramters, vector<double>* delta, double t_min, double t_max, bool normalized){
     
-    //finding the optimal t using binary search to get the best t for the smallest Least Squares result
+    //calculate the different sum_sq for the three t values in the binary line search
     double t_mid = (t_min+t_max)/2.0;
     double t_mid_adj_sum_sqs = t_adjusted_sum_sq( VGS, VDS, IDS, t_mid, delta, paramters, normalized);
     double t_min_adj_sum_sqs = t_adjusted_sum_sq( VGS, VDS, IDS, t_min, delta, paramters, normalized);
@@ -101,6 +106,7 @@ double linear_search( vector<double>* VGS , vector<double>* VDS, vector<double>*
     double t_opt = t_mid;
     double sum_sq_opt = t_mid_adj_sum_sqs;
     
+    //finding the optimal t using binary search to get the best t for the smallest Least Squares result
     if( t_opt != 0.0 && t_max != 0.0){
        if( isnan(t_max_adj_sum_sqs) || isnan(t_mid_adj_sum_sqs)){
         t_opt = linear_search( VGS , VDS, IDS, paramters, delta, t_min, t_mid, normalized);
