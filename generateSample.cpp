@@ -49,9 +49,10 @@ void randomSamples(vector<double>* x, vector<double>* y, vector<double>* noise, 
     
 }
 
-void LinearLSF(vector<double>* x, vector<double>* y, vector<vector<double>*>* H, vector<double>* RHS){
+void LinearLSF(vector<double>* x, vector<double>* y, vector<vector<double>>* H, vector<double>* RHS){
     //    initialize the Hessian matrix
     zeroMatrix(H, 2);
+    vector<vector<double>> H_show = (*H);
     
     //    initialize each term for the Hessian matrix and RHS matrix
     double sum_xi = 0.0, sum_xi_sq = 0.0, sum_bs = 0.0, sum_yi = 0.0, sum_xi_yi = 0.0;
@@ -74,10 +75,10 @@ void LinearLSF(vector<double>* x, vector<double>* y, vector<vector<double>*>* H,
         (*RHS).push_back(sum_xi_yi);
         (*RHS).push_back(sum_yi);
         
-        (*(*H)[0])[0] = sum_xi_sq;
-        (*(*H)[0])[1] = sum_xi;
-        (*(*H)[1])[0] = sum_xi;
-        (*(*H)[1])[1] = sum_bs;
+        ((*H)[0])[0] = sum_xi_sq;
+        ((*H)[0])[1] = sum_xi;
+        ((*H)[1])[0] = sum_xi;
+        ((*H)[1])[1] = sum_bs;
     }
     
 }

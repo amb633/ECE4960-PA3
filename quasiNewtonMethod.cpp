@@ -11,8 +11,8 @@
 void quasiNetwon_dx(vector<double>* VGS , vector<double>* VDS, vector<double>* IDS, double k, double Vth, double Is, vector<double>* delta_x, bool normalized){
     
     //initializes the Hessian matrix
-    vector<vector<double>*>* H = new vector<vector<double>*>;
-    zeroMatrix(H, 3);
+    vector<vector<double>> H;
+    zeroMatrix(&H, 3);
 
     //Ids_model which will be filled in by modelIds for different paramter pertubations
     vector<double>* Ids_current = new vector<double>;
@@ -49,26 +49,26 @@ void quasiNetwon_dx(vector<double>* VGS , vector<double>* VDS, vector<double>* I
     double current_sum_sqs = sumSquares(Ids_current, IDS, normalized);
     
     //calculating the V gradient vector terms
-    vector<double>* v_grad = new vector<double>;
-    (*v_grad).push_back((sumSquares(Ids_dk, IDS, normalized)-current_sum_sqs)/dk);
-    (*v_grad).push_back((sumSquares(Ids_dVth, IDS, normalized)-current_sum_sqs)/dVth);
-    (*v_grad).push_back((sumSquares(Ids_dIs, IDS, normalized)-current_sum_sqs)/dIs);
+    vector<double> v_grad;
+    (v_grad).push_back((sumSquares(Ids_dk, IDS, normalized)-current_sum_sqs)/dk);
+    (v_grad).push_back((sumSquares(Ids_dVth, IDS, normalized)-current_sum_sqs)/dVth);
+    (v_grad).push_back((sumSquares(Ids_dIs, IDS, normalized)-current_sum_sqs)/dIs);
     
     //calculating the Hessian matrix terms
-    (*(*H)[0])[0] = (sumSquares(Ids_2dk, IDS, normalized) - 2*((*v_grad)[0]) + current_sum_sqs)/(dk*dk);
-    (*(*H)[0])[1] = (sumSquares(Ids_dkdVth, IDS, normalized) - (*v_grad)[0] - (*v_grad)[1] + current_sum_sqs)/(dk*dVth);
-    (*(*H)[0])[2] = (sumSquares(Ids_dkdIs, IDS, normalized) - (*v_grad)[0] - (*v_grad)[2] + current_sum_sqs)/(dk*dIs);
+    H[0][0] = (sumSquares(Ids_2dk, IDS, normalized) - 2*((v_grad)[0]) + current_sum_sqs)/(dk*dk);
+    H[0][1] = (sumSquares(Ids_dkdVth, IDS, normalized) - (v_grad)[0] - (v_grad)[1] + current_sum_sqs)/(dk*dVth);
+    H[0][2] = (sumSquares(Ids_dkdIs, IDS, normalized) - (v_grad)[0] - (v_grad)[2] + current_sum_sqs)/(dk*dIs);
     
-    (*(*H)[1])[0] = (*(*H)[0])[1];
-    (*(*H)[1])[1] = (sumSquares(Ids_2dVth, IDS, normalized) - 2*((*v_grad)[1]) + current_sum_sqs)/(dVth*dVth);
-    (*(*H)[1])[2] = (sumSquares(Ids_dVthdIs, IDS, normalized) - (*v_grad)[1] - (*v_grad)[2] + current_sum_sqs)/(dVth*dIs);
+    H[1][0] = H[0][1];
+    H[1][1] = (sumSquares(Ids_2dVth, IDS, normalized) - 2*((v_grad)[1]) + current_sum_sqs)/(dVth*dVth);
+    H[1][2] = (sumSquares(Ids_dVthdIs, IDS, normalized) - (v_grad)[1] - (v_grad)[2] + current_sum_sqs)/(dVth*dIs);
     
-    (*(*H)[2])[0] = (*(*H)[0])[2];
-    (*(*H)[2])[1] = (*(*H)[1])[2];
-    (*(*H)[2])[2] = (sumSquares(Ids_2dIs, IDS, normalized) - 2*((*v_grad)[2]) + current_sum_sqs)/(dIs*dIs);
+    H[2][0] = H[0][2];
+    H[2][1] = H[1][2];
+    H[2][2] = (sumSquares(Ids_2dIs, IDS, normalized) - 2*((v_grad)[2]) + current_sum_sqs)/(dIs*dIs);
     
     //solving for the delta of the parameters, given the Hessian matrix and V gradient vector
-    fullSolver( delta_x , H , v_grad );
+    fullSolver( delta_x , &H , &v_grad );
     for(int i = 0; i<(*delta_x).size(); i++){
         (*delta_x)[i] = (-1.0)* (*delta_x)[i];
     }
@@ -101,14 +101,16 @@ double linear_search( vector<double>* VGS , vector<double>* VDS, vector<double>*
     double t_opt = t_mid;
     double sum_sq_opt = t_mid_adj_sum_sqs;
     
-    if( isnan(t_max_adj_sum_sqs) || isnan(t_mid_adj_sum_sqs)){
+    if( t_opt != 0.0 && t_max != 0.0){
+       if( isnan(t_max_adj_sum_sqs) || isnan(t_mid_adj_sum_sqs)){
         t_opt = linear_search( VGS , VDS, IDS, paramters, delta, t_min, t_mid, normalized);
-    }
-    if( t_min_adj_sum_sqs < sum_sq_opt ){
-        t_opt = linear_search( VGS , VDS, IDS, paramters, delta, t_min, t_mid, normalized);
-    }
-    if( t_max_adj_sum_sqs < sum_sq_opt ){
-        t_opt = linear_search( VGS , VDS, IDS, paramters, delta, t_mid, t_max, normalized);
+        }
+        if( t_min_adj_sum_sqs < sum_sq_opt ){
+            t_opt = linear_search( VGS , VDS, IDS, paramters, delta, t_min, t_mid, normalized);
+        }
+        if( t_max_adj_sum_sqs < sum_sq_opt ){
+            t_opt = linear_search( VGS , VDS, IDS, paramters, delta, t_mid, t_max, normalized);
+        }
     }
     return t_opt;
 }

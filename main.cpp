@@ -13,44 +13,44 @@
 #include <cstdlib>
 #include "fullSolver.hpp"
 #include "generateSample.hpp"
-//#include "utilityFunctions.hpp"
-#include "quasiNewtonMethod.hpp"
-#include "secant.hpp"
+#include "utilityFunctions.hpp"
+//#include "quasiNewtonMethod.hpp"
+//#include "secant.hpp"
 
-vector<double>* VGS = new vector<double>;
-vector<double>* VDS = new vector<double>;
-vector<double>* IDS = new vector<double>;
+vector<double> VGS;
+vector<double> VDS;
+vector<double> IDS;
 
-//string path = "/Users/arianabruno/Desktop/ECE4960/ProgrammingAssignments/ECE4960-PA3/outputNMOS.txt";
-string path = "C:/Users/Haritha/Documents/ECE4960-PAs/ECE4960-PA3/outputNMOS.txt";
+string path = "/Users/arianabruno/Desktop/ECE4960/ProgrammingAssignments/ECE4960-PA3/outputNMOS.txt";
+//string path = "C:/Users/Haritha/Documents/ECE4960-PAs/ECE4960-PA3/outputNMOS.txt";
 
 
 int main(int argc, const char * argv[]) {
     cout << endl << " -------- Task 2 : Parameter Extraction for Power Law -------- " << endl << endl;
    
-    readDataFile( path , VGS ,  VDS ,  IDS );
+    readDataFile( path , &VGS ,  &VDS ,  &IDS );
     
-    vector<double>* x_samples  = new vector<double>;
-    vector<double>* y_samples  = new vector<double>;
-    vector<double>* noise_samples  = new vector<double>;
-    vector<double>* y_noisey_samples  = new vector<double>;
+    vector<double> x_samples;
+    vector<double> y_samples;
+    vector<double> noise_samples;
+    vector<double> y_noisey_samples;
     
-    randomSamples(x_samples, y_samples, noise_samples, y_noisey_samples);
+    randomSamples(&x_samples, &y_samples, &noise_samples, &y_noisey_samples);
     
-    vector<vector<double>*>* H_matrix = new vector<vector<double>*>;
-    vector<double>* RHS = new vector<double>;
+    vector<vector<double>> H_matrix;
+    vector<double> RHS;
     
 //    find the H matrix and RHS vector for this problem for parameter extraction of  m and c0 for the S_measured data
-    LinearLSF(x_samples, y_noisey_samples, H_matrix, RHS);
-    vector<double>* solution = new vector<double>;
+    LinearLSF(&x_samples, &y_noisey_samples, &H_matrix, &RHS);
+    vector<double> solution;
 
 //    solve for the parameters given H and RHS
-    fullSolver( solution , H_matrix , RHS );
+    fullSolver( &solution , &H_matrix , &RHS );
     
     cout << " This is the solution for m and log(c0)" << endl;
-    printMatrix( solution );
-    cout << " m = " << (*solution)[0] << endl;
-    cout << " c0 = " << exp((*solution)[1]) << endl;
+    printMatrix( &solution );
+    cout << " m = " << (solution)[0] << endl;
+    cout << " c0 = " << exp((solution)[1]) << endl;
     
     cout << endl << " -------- Task 4A : Quasi Newton Parameter Extraction-------- " << endl << endl;
     
@@ -58,16 +58,16 @@ int main(int argc, const char * argv[]) {
     double Vth_0 = 1.0;
     double Is_0 = 1e-7;
     
-    vector<double>* current_parameters = new vector<double>;
-    (*current_parameters).push_back(k_0); (*current_parameters).push_back(Vth_0); (*current_parameters).push_back(Is_0);
-    vector<double>* updated_parameters = new vector<double>;
+    vector<double> current_parameters;
+    (current_parameters).push_back(k_0); (current_parameters).push_back(Vth_0); (current_parameters).push_back(Is_0);
+    vector<double> updated_parameters;
     
     double norm_V, norm_delta_rel, norm_delta_abs;
     
-    quasiNetwon_itr(VGS, VDS, IDS, current_parameters, updated_parameters, &norm_V, &norm_delta_rel, &norm_delta_abs, false);
-    (*current_parameters) = (*updated_parameters);
+    quasiNetwon_itr(&VGS, &VDS, &IDS, &current_parameters, &updated_parameters, &norm_V, &norm_delta_rel, &norm_delta_abs, false);
+    (current_parameters) = (updated_parameters);
     
-    int itr = 0;
+    /*int itr = 0;
     while( norm_V > 1e-9 && norm_delta_rel > 1e-9){
         vector<double>* new_parameters = new vector<double>;
         quasiNetwon_itr(VGS, VDS, IDS, current_parameters, new_parameters, &norm_V, &norm_delta_rel, &norm_delta_abs, false);
@@ -147,17 +147,17 @@ int main(int argc, const char * argv[]) {
     double relative_residual , absolute_residual , least_squares; 
 
     // call the simple secant method for convergence
-    /* input parameters are as follows:
-     * iterations -> where the number of interations it took for the solution to converge will be stored
-     * parameter_solutions -> to store the converged solutions
-     * absolute , relative residuals -> to store the values of the residuals
-     * least squares -> to store the least squares value after convergence
-     * guess_0 -> oldest guess
-     * guess_1 -> next guess
-     * guess_2 -> third data point from the recurrence relation
-     * VGS, VDS, IDS -> data from the file
-     */
-    secantConvergence( iterations , &parameter_solutions , 
+    //* input parameters are as follows:
+    //* iterations -> where the number of interations it took for the solution to converge will be stored
+    //* parameter_solutions -> to store the converged solutions
+    //* absolute , relative residuals -> to store the values of the residuals
+    //* least squares -> to store the least squares value after convergence
+    //* guess_0 -> oldest guess
+    //* guess_1 -> next guess
+    //* guess_2 -> third data point from the recurrence relation
+    //* VGS, VDS, IDS -> data from the file
+    
+    secantConvergence( iterations , &parameter_solutions ,
         absolute_residual , relative_residual , least_squares ,
         &guess_0 , &guess_1 , &guess_2 , VGS , VDS , IDS );
 
@@ -171,12 +171,12 @@ int main(int argc, const char * argv[]) {
     cout << " least squares = " << least_squares << endl;
 
     // parameter sensitivity analysis
-    /* input parameters are as follows:
-     * parameter_solutions -> solution from convergence above
-     * pertubation -> amount by which to disturb the parameter for analysis
-     * which -> which parameter to perturb: 0 is kappa , 1 is vth and 2 is is
-     * VGS, VDS, IDS -> data from the file
-     */
+    //* input parameters are as follows:
+    //* parameter_solutions -> solution from convergence above
+    //* pertubation -> amount by which to disturb the parameter for analysis
+    //* which -> which parameter to perturb: 0 is kappa , 1 is vth and 2 is is
+    //* VGS, VDS, IDS -> data from the file
+     
     double kappa_sensitivity = parameterSensitivity( &parameter_solutions , 0.1 , 0 , VGS , VDS , IDS );
     double vth_sensitivity = parameterSensitivity ( &parameter_solutions , 0.1 , 1 , VGS , VDS , IDS );
     double is_sensitivity = parameterSensitivity ( &parameter_solutions , 0.1 , 2 , VGS , VDS , IDS );
@@ -229,14 +229,63 @@ int main(int argc, const char * argv[]) {
     vector<double>* absolute_residual_uSecant = new vector<double>;
     vector<double>* relative_residual_uSecant = new vector<double>;
     
+    vector<double>* current_parameters_itr = new vector<double>;
+    vector<double>* updated_parameters_itr = new vector<double>;
+    
+    for ( int itk = 0 ; itk < kappa_initial_points.size() ; itk++ ){
+        for ( int itv = 0 ; itv < vth_initial_points.size() ; itv++ ){
+            for ( int its = 0 ; its < is_initial_points.size() ; its++ ){
+                double k_0 = kappa_initial_points[itk];
+                double Vth_0 = vth_initial_points[itv];
+                double Is_0 = is_initial_points[its];
+                
+                current_parameters_itr->erase(current_parameters_itr->begin(),current_parameters_itr->end());
+                (*current_parameters_itr).push_back(k_0); (*current_parameters_itr).push_back(Vth_0); (*current_parameters_itr).push_back(Is_0);
+                updated_parameters_itr->erase(updated_parameters_itr->begin(), updated_parameters_itr->end());
+                
+                double norm_V, norm_delta_rel, norm_delta_abs;
+                
+                quasiNetwon_itr(VGS, VDS, IDS, current_parameters_itr, updated_parameters_itr, &norm_V, &norm_delta_rel, &norm_delta_abs, false);
+                (*current_parameters_itr) = (*updated_parameters_itr);
+                
+                int itr = 0;
+                while( norm_V > 1e-9 && norm_delta_rel > 1e-9){
+                    vector<double>* new_parameters = new vector<double>;
+                    quasiNetwon_itr(VGS, VDS, IDS, current_parameters, new_parameters, &norm_V, &norm_delta_rel, &norm_delta_abs, false);
+                    (*current_parameters) = (*new_parameters);
+                    itr++;
+                }
+                
+                cout << " the converged solutions after " << itr << " iterations are: " << endl;
+                cout << " kappa = " << (*current_parameters)[0] << endl;
+                cout << " V_th = " << (*current_parameters)[1] << endl;
+                cout << " Is = " << (*current_parameters)[2] << endl;
+                cout << " absolute residual error = " << norm_delta_abs << endl;
+                cout << " relative residual error = " << norm_delta_rel << endl;
+                cout << " least squares = " << norm_V << endl;
+                
+                double k_sensitivity = parameterSensitivity( current_parameters , 0.1 , 0 , VGS , VDS , IDS );
+                double Vth_sensitivity = parameterSensitivity ( current_parameters , 0.1 , 1 , VGS , VDS , IDS );
+                double Is_sensitivity = parameterSensitivity ( current_parameters , 0.1 , 2 , VGS , VDS , IDS );
+                cout << " sensitivity with respect to kappa = " << k_sensitivity << endl;
+                cout << " sensitivity with respect to vth   = " << Vth_sensitivity << endl;
+                cout << " sensitivity with respect to is    = " << Is_sensitivity << endl;
+                
+                cout << endl;
+                
+            }
+        }
+    }
+    
+    
     for ( int itk = 0 ; itk < kappa_initial_points.size() ; itk++ ){
         for ( int itv = 0 ; itv < vth_initial_points.size() ; itv++ ){
             for ( int its = 0 ; its < is_initial_points.size() ; its++ ){
                 // clear some old variables
-                /*guess_0.erase(guess_0.begin(),guess_0.end());
-                guess_1.erase(guess_1.begin(),guess_1.end());
-                guess_2.erase(guess_2.begin(),guess_2.end());
-                parameter_solutions.erase(parameter_solutions.begin(),parameter_solutions.end());*/
+                //guess_0.erase(guess_0.begin(),guess_0.end());
+                //guess_1.erase(guess_1.begin(),guess_1.end());
+                //guess_2.erase(guess_2.begin(),guess_2.end());
+                //parameter_solutions.erase(parameter_solutions.begin(),parameter_solutions.end());
                 iterations = 0;
                 relative_residual = 1.0;
                 absolute_residual = 1.0;
@@ -275,6 +324,6 @@ int main(int argc, const char * argv[]) {
             }
         }
     }
-    cout << endl;
+    cout << endl;*/
     return 0;
 }
