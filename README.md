@@ -54,6 +54,7 @@ The following functions are defined in the full solver files.  All input argumen
 **Documentation**
 - `randomSamples(x, y, noise, y_noisey)`: calculates the x and y sample pairs with y returning a value that has 10-20% noise randomly added to it ;
 - `LinearLSF(x, y_noisey, H_matrix, RHS)` : calculates the Hessaian matrix and RHS vector for the Power Law problem that has been altered to be a linear problem by taking the log of it. The Hessaian matrix and RHS vector are then used in the fullSolver function to achieve the parameter extraction of  m and c0 for the S_measured data.
+
 ***************************************************************************
 ### Part 3 - Visualization of Data
 ***************************************************************************
@@ -69,6 +70,7 @@ Graphs were generated using MATLAB. Please refer to the **ReportAndAnalysis.pdf*
 - `quasiNetwon_dx()` : calculates the delta for each parameter by calculating the Hessian Matrix and the gradient of the least squares function.
 - `linear_search()` : calculate the optimal "t" to scale the deltas of the parameters. By scaling the deltas by "t", then adding the scaled deltas to the parameters, it will achieve the optimal least sqaures value for that iteration.
 - `t_adjusted_sum_sq()` : calculates the least sqaure sum for each "t" value being evaluated in the line search to decide is a "t" is better than the previous "t" value.
+
 ***************************************************************************
 ### Part 4B - Unnormalized Secant Convergence
 ***************************************************************************
